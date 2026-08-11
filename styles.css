@@ -371,6 +371,7 @@ h3 { margin: 0 0 8px; font-size: 1.35rem; }
 
 .footer {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 24px;
   margin-top: 28px;
