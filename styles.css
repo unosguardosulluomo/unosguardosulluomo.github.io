@@ -58,7 +58,7 @@ a { color: inherit; }
 
 .masthead {
   display: grid;
-  grid-template-columns: 92px minmax(0, 1fr) 92px;
+  grid-template-columns: minmax(0, 1fr) 92px;
   align-items: center;
   gap: 18px;
   padding: 18px 0 15px;
@@ -70,21 +70,6 @@ a { color: inherit; }
   width: 100%;
   height: auto;
   filter: saturate(.82) contrast(1.04);
-}
-
-.seal {
-  width: 78px;
-  aspect-ratio: 1;
-  border: 3px double var(--ink);
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  text-align: center;
-  font-size: .58rem;
-  font-weight: 700;
-  letter-spacing: .05em;
-  line-height: 1.15;
-  transform: rotate(-4deg);
 }
 
 .issue {
@@ -273,8 +258,7 @@ h3 { margin: 0 0 8px; font-size: 1.35rem; }
 @media (max-width: 760px) {
   .newspaper { width: min(100% - 14px, 700px); margin-top: 7px; padding: 14px 14px 32px; }
   .utility-bar span:nth-child(2), .issue { display: none; }
-  .masthead { grid-template-columns: 48px minmax(0, 1fr); gap: 8px; padding: 12px 0; }
-  .seal { width: 45px; font-size: .36rem; border-width: 2px; }
+  .masthead { grid-template-columns: minmax(0, 1fr); gap: 8px; padding: 12px 0; }
   .nav { justify-content: space-between; gap: 8px; overflow-x: auto; }
   .nav a { font-size: .64rem; white-space: nowrap; }
   .lead-grid { grid-template-columns: 1fr; gap: 20px; }
@@ -289,4 +273,3 @@ h3 { margin: 0 0 8px; font-size: 1.35rem; }
   .article-number { font-size: 2.6rem; }
   .footer { display: block; }
 }
-
