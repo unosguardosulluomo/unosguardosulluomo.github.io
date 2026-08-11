@@ -408,3 +408,45 @@ h3 { margin: 0 0 8px; font-size: 1.35rem; }
   .article-hero figcaption { padding: 0 14px; }
   .footer { display: block; }
 }
+
+
+.footer a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.privacy-summary {
+  margin: 24px 0 32px;
+  padding: 20px 22px;
+  border: 1px solid var(--rule);
+  background: rgba(250, 245, 233, .58);
+}
+
+.privacy-summary strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--accent);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.25rem;
+}
+
+.privacy-details {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 18px 0 28px;
+  font-size: .9rem;
+}
+
+.privacy-details th,
+.privacy-details td {
+  padding: 10px;
+  border-bottom: 1px solid rgba(40, 33, 23, .35);
+  text-align: left;
+  vertical-align: top;
+}
+
+.privacy-details th {
+  width: 28%;
+  font-weight: 800;
+}
