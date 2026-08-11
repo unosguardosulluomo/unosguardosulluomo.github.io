@@ -358,6 +358,7 @@ h3 { margin: 0 0 8px; font-size: 1.35rem; }
 .sources { margin-top: 48px; padding: 22px; background: rgba(40, 33, 23, .06); font-family: Arial, sans-serif; font-size: .86rem; }
 .sources h2 { margin-top: 0; border-top: 0; padding-top: 0; font-family: Georgia, serif; }
 .source-note { color: var(--muted); font-size: .75rem; }
+.publication-note { margin: 30px 0; padding: 20px; border: 1px solid var(--rule); background: rgba(250, 245, 233, .58); }
 
 .prose {
   max-width: 840px;
