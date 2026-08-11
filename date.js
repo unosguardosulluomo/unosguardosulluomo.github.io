@@ -25,34 +25,34 @@ if (!document.querySelector('link[href="editorial-rules.css"]')) {
   document.head.appendChild(editorialStyles);
 }
 
-// Indagine Italia-Spagna: usa sempre la foto editoriale approvata del T1 del 10 agosto.
+// Indagine Italia-Spagna: usa sempre la foto editoriale originale approvata.
 const spainArticleHref = 'article-controlli-italia-spagna.html';
-const spainImage = 'assets/aeroporto-t1-10-agosto.jpg';
+const spainImage = 'https://cdn-acn.watchity.net/acn/images/c864b72a-8fa4-4aaf-b9b6-95172543e4eb/b6f0cf97-9cf6-454a-b030-073290774247/b6f0cf97-9cf6-454a-b030-073290774247_medium.jpeg';
 
 document.querySelectorAll(`a[href="${spainArticleHref}"] img`).forEach((img) => {
   img.src = spainImage;
-  img.alt = 'Passeggeri al Terminal 1 di un aeroporto spagnolo il 10 agosto 2026';
+  img.alt = 'Passeggeri al Terminal 1 dell’aeroporto di Barcellona';
 });
 
 if (window.location.pathname.endsWith('/article-controlli-italia-spagna.html') || window.location.pathname.endsWith(spainArticleHref)) {
   const hero = document.querySelector('.article-hero img');
   if (hero) {
     hero.src = spainImage;
-    hero.alt = 'Passeggeri al Terminal 1 di un aeroporto spagnolo il 10 agosto 2026';
+    hero.alt = 'Passeggeri al Terminal 1 dell’aeroporto di Barcellona';
   }
 
   const caption = document.querySelector('.article-hero figcaption');
   if (caption) {
-    caption.textContent = 'Terminal 1, 10 agosto 2026.';
+    caption.textContent = 'Passeggeri al Terminal 1 dell’aeroporto di Barcellona. Foto: Carola López / ACN - Catalan News.';
   }
 
   const ogImage = document.querySelector('meta[property="og:image"]');
   if (ogImage) {
-    ogImage.setAttribute('content', 'https://unosguardosulluomo.github.io/assets/aeroporto-t1-10-agosto.jpg');
+    ogImage.setAttribute('content', spainImage);
   }
 
   const ogAlt = document.querySelector('meta[property="og:image:alt"]');
   if (ogAlt) {
-    ogAlt.setAttribute('content', 'Passeggeri al Terminal 1 di un aeroporto spagnolo il 10 agosto 2026');
+    ogAlt.setAttribute('content', 'Passeggeri al Terminal 1 dell’aeroporto di Barcellona');
   }
 }
