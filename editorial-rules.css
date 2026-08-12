@@ -30,6 +30,35 @@
   line-height: 1.08;
 }
 
+/* Copertina editoriale Lega: immagine quadrata, mai tagliata */
+.lega-cover {
+  margin: 24px auto 30px;
+  max-width: 900px;
+}
+.lega-cover img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: none;
+  object-fit: contain;
+  filter: none;
+}
+.lega-cover figcaption {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: .65rem;
+}
+.article-list a[href="article-lega-governatori.html"].story-image {
+  aspect-ratio: 1 / 1;
+  background: transparent;
+}
+.article-list a[href="article-lega-governatori.html"].story-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: none;
+}
+
 @media (max-width: 760px) {
   .article-header h1 {
     max-width: 100%;
@@ -46,5 +75,9 @@
 
   .lead-story h1 {
     font-size: clamp(2rem, 8.5vw, 2.75rem);
+  }
+
+  .lega-cover {
+    margin: 18px auto 24px;
   }
 }
