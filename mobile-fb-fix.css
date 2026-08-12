@@ -1,0 +1,96 @@
+@media (max-width: 760px) {
+  html, body {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  .newspaper {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 12px;
+    border-left: 0;
+    border-right: 0;
+    overflow-x: hidden;
+  }
+
+  main, article, section, header, footer, aside, div {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  p, h1, h2, h3, a, strong, span, li, blockquote {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  img, video, iframe, svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .article-header,
+  .article-layout,
+  .article-body,
+  .article-body-wide,
+  .article-sidebar,
+  .article-thesis,
+  .sources {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .article-header h1 {
+    font-size: clamp(1.8rem, 8.5vw, 2.5rem);
+    line-height: 1.04;
+    letter-spacing: -.025em;
+  }
+
+  .article-hero {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .article-hero img {
+    width: 100%;
+    height: auto;
+    max-height: none;
+  }
+
+  .utility-bar {
+    flex-wrap: wrap;
+  }
+
+  .nav {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .data-table-wrap {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .data-table {
+    min-width: 520px;
+  }
+
+  .article-pullquote {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
