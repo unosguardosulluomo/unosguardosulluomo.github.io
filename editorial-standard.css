@@ -1,0 +1,121 @@
+/* UNO SGUARDO SULL'UOMO — STANDARD EDITORIALE DI IMPAGINAZIONE
+   Questa è la regola unica per gerarchia tipografica e resa mobile.
+   Non creare più eccezioni articolo-per-articolo per dimensioni dei titoli. */
+
+:root{
+  --usu-mobile-title: 2.05rem;
+  --usu-mobile-title-line: 1.06;
+  --usu-mobile-subtitle: 1.05rem;
+  --usu-mobile-body: 1rem;
+  --usu-mobile-body-line: 1.62;
+  --usu-mobile-small-title: 1.95rem;
+}
+
+/* Coerenza generale */
+.headline-link,
+h1,h2,h3,
+.article-header h1,
+.article-copy h2{
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+}
+
+@media (max-width:760px){
+  /* La pagina mobile usa sempre la stessa gabbia */
+  .newspaper{
+    width:100%;
+    max-width:none;
+    margin:0;
+    padding:14px 22px 32px;
+    border-left:0;
+    border-right:0;
+    box-shadow:none;
+  }
+
+  /* Titolo principale della prima pagina: stessa scala visiva delle card */
+  .lead-story h1,
+  .lead-story h1 a{
+    font-size:var(--usu-mobile-title) !important;
+    line-height:var(--usu-mobile-title-line) !important;
+    letter-spacing:-.028em !important;
+  }
+
+  /* Titoli delle notizie laterali e delle card */
+  .side-story h2,
+  .story-card h3,
+  .article-list .article-copy h2{
+    font-size:var(--usu-mobile-small-title) !important;
+    line-height:1.06 !important;
+    letter-spacing:-.02em !important;
+  }
+
+  /* Titolo delle pagine articolo: mai più gigante */
+  .article-header h1{
+    font-size:var(--usu-mobile-title) !important;
+    line-height:var(--usu-mobile-title-line) !important;
+    letter-spacing:-.028em !important;
+    text-align:left;
+    max-width:100%;
+  }
+
+  /* Titolo pagina archivio */
+  .page-header h1{
+    font-size:2.2rem !important;
+    line-height:1.05 !important;
+  }
+
+  /* Sommari e testo: scala stabile */
+  .standfirst,
+  .article-deck{
+    font-size:var(--usu-mobile-subtitle) !important;
+    line-height:1.42 !important;
+  }
+
+  .side-story p,
+  .story-card p,
+  .article-copy p,
+  .columns-2,
+  .article-body{
+    font-size:var(--usu-mobile-body) !important;
+    line-height:var(--usu-mobile-body-line) !important;
+  }
+
+  .article-body h2{
+    font-size:1.55rem !important;
+    line-height:1.12 !important;
+  }
+
+  .article-body h3{
+    font-size:1.2rem !important;
+    line-height:1.18 !important;
+  }
+
+  .article-pullquote{
+    font-size:1.22rem !important;
+    line-height:1.32 !important;
+  }
+
+  /* Spaziatura uniforme tra blocchi */
+  .lead-grid{gap:22px;}
+  .side-story + .side-story{margin-top:24px;padding-top:24px;}
+  .story-card,
+  .story-card:first-child,
+  .story-card:last-child{padding:24px 0;}
+  .article-list article{padding:24px 0;gap:14px;}
+
+  /* Immagini sempre nella gabbia, niente larghezze anomale */
+  .story-image,
+  .story-image img,
+  .article-hero,
+  .article-hero img{
+    max-width:100%;
+  }
+
+  .article-hero{
+    margin-left:0 !important;
+    margin-right:0 !important;
+  }
+
+  .article-hero figcaption{padding:0 !important;}
+}
