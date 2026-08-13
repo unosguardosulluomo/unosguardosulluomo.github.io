@@ -67,4 +67,53 @@
       section.prepend(card);
     }
   }
+
+  if((path.endsWith('/indagini.html') || path.endsWith('indagini.html')) && !document.getElementById('scudo-parlamentare')){
+    const list=document.querySelector('.article-list');
+    if(list){
+      const item=document.createElement('article');
+      item.id='scudo-parlamentare';
+      item.dataset.category='politica-italiana';
+      item.dataset.topics='costituzione parlamento immunita prima-repubblica';
+
+      const imageLink=document.createElement('a');
+      imageLink.className='story-image';
+      imageLink.href=href;
+      const image=document.createElement('img');
+      image.src=cover;
+      image.alt='La Costituzione della Repubblica italiana';
+      image.loading='lazy';
+      imageLink.appendChild(image);
+
+      const copy=document.createElement('div');
+      copy.className='article-copy';
+
+      const eyebrow=document.createElement('p');
+      eyebrow.className='eyebrow';
+      eyebrow.textContent='Politica italiana';
+
+      const heading=document.createElement('h2');
+      const headingLink=document.createElement('a');
+      headingLink.className='headline-link';
+      headingLink.href=href;
+      headingLink.textContent='DA SCUDO CONTRO IL POTERE A SCUDO DELLA PAROLA?';
+      heading.appendChild(headingLink);
+
+      const summary=document.createElement('p');
+      summary.textContent='Tre secoli di immunità parlamentare: 1689, 1789, 1948, la svolta del 1993 e la politica della comunicazione permanente.';
+
+      const topics=document.createElement('div');
+      topics.className='topic-list';
+      ['Costituzione','Parlamento','Immunità'].forEach(t=>{const s=document.createElement('span'); s.textContent=t; topics.appendChild(s);});
+
+      const readMore=document.createElement('a');
+      readMore.className='read-more';
+      readMore.href=href;
+      readMore.textContent='Leggi l’indagine →';
+
+      copy.append(eyebrow,heading,summary,topics,readMore);
+      item.append(imageLink,copy);
+      list.prepend(item);
+    }
+  }
 })();
