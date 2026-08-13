@@ -13,4 +13,14 @@
   editorialStandard.rel='stylesheet';
   editorialStandard.href='editorial-standard.css?v=20260812-1';
   document.head.appendChild(editorialStandard);
+
+  if(location.pathname.endsWith('article-scudo-parlamentare.html')){
+    const hero=document.querySelector('.article-hero img');
+    if(hero){
+      hero.src='https://archivio.quirinale.it/bookreader//la_costituzione_volume_cosentino/LA_COSTITUZIONE_DELLA_REPUBBLICA_ITALIANA_121.jpg';
+      hero.alt='La Costituzione della Repubblica italiana';
+      const caption=hero.closest('figure')?.querySelector('figcaption');
+      if(caption) caption.textContent='La Costituzione della Repubblica italiana. Archivio storico della Presidenza della Repubblica.';
+    }
+  }
 })();
