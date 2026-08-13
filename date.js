@@ -14,13 +14,57 @@
   editorialStandard.href='editorial-standard.css?v=20260812-1';
   document.head.appendChild(editorialStandard);
 
+  const cover='https://archivio.quirinale.it/bookreader//la_costituzione_volume_cosentino/LA_COSTITUZIONE_DELLA_REPUBBLICA_ITALIANA_121.jpg';
+  const href='article-scudo-parlamentare.html';
+
   if(location.pathname.endsWith('article-scudo-parlamentare.html')){
     const hero=document.querySelector('.article-hero img');
     if(hero){
-      hero.src='https://archivio.quirinale.it/bookreader//la_costituzione_volume_cosentino/LA_COSTITUZIONE_DELLA_REPUBBLICA_ITALIANA_121.jpg';
+      hero.src=cover;
       hero.alt='La Costituzione della Repubblica italiana';
       const caption=hero.closest('figure')?.querySelector('figcaption');
       if(caption) caption.textContent='La Costituzione della Repubblica italiana. Archivio storico della Presidenza della Repubblica.';
+    }
+  }
+
+  const path=location.pathname;
+  if((path==='/' || path.endsWith('/index.html')) && !document.getElementById('scudo-parlamentare-home')){
+    const section=[...document.querySelectorAll('section.story-grid')].find(s=>s.getAttribute('aria-label')==='Politica italiana');
+    if(section){
+      const card=document.createElement('article');
+      card.className='story-card';
+      card.id='scudo-parlamentare-home';
+
+      const imageLink=document.createElement('a');
+      imageLink.className='story-image';
+      imageLink.href=href;
+      const image=document.createElement('img');
+      image.src=cover;
+      image.alt='La Costituzione della Repubblica italiana';
+      image.loading='lazy';
+      imageLink.appendChild(image);
+
+      const eyebrow=document.createElement('p');
+      eyebrow.className='eyebrow';
+      eyebrow.textContent='Costituzione e Parlamento';
+
+      const heading=document.createElement('h3');
+      const headingLink=document.createElement('a');
+      headingLink.className='headline-link';
+      headingLink.href=href;
+      headingLink.textContent='Da scudo contro il potere a scudo della parola?';
+      heading.appendChild(headingLink);
+
+      const summary=document.createElement('p');
+      summary.textContent='Tre secoli di immunità parlamentare, dalle origini alla politica della comunicazione permanente.';
+
+      const readMore=document.createElement('a');
+      readMore.className='read-more';
+      readMore.href=href;
+      readMore.textContent='Leggi l’indagine →';
+
+      card.append(imageLink,eyebrow,heading,summary,readMore);
+      section.prepend(card);
     }
   }
 })();
