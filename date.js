@@ -18,6 +18,11 @@
   const href='article-scudo-parlamentare.html';
 
   if(location.pathname.endsWith('article-scudo-parlamentare.html')){
+    const article68Fix=document.createElement('link');
+    article68Fix.rel='stylesheet';
+    article68Fix.href='article-68-fix.css?v=20260814-2';
+    document.head.appendChild(article68Fix);
+
     const hero=document.querySelector('.article-hero img');
     if(hero){
       hero.src=cover;
