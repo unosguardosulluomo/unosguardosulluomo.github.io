@@ -1,4 +1,14 @@
 (function(){
+  const gaId='G-XMRPY5JL0Z';
+  window.dataLayer=window.dataLayer||[];
+  window.gtag=window.gtag||function(){window.dataLayer.push(arguments);};
+  window.gtag('js',new Date());
+  window.gtag('config',gaId);
+  const gaScript=document.createElement('script');
+  gaScript.async=true;
+  gaScript.src=`https://www.googletagmanager.com/gtag/js?id=${gaId}`;
+  document.head.appendChild(gaScript);
+
   const now=new Date();
   const months=['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
   const d=`${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
