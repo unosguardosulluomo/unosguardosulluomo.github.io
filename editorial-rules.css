@@ -8,15 +8,29 @@
     gap: clamp(30px, 4vw, 56px);
   }
 
+  /* Le sidebar non devono restringere il testo dell'indagine. */
   .article-layout:has(> .article-sidebar) {
-    grid-template-columns: minmax(0, 820px) minmax(200px, 260px);
+    grid-template-columns: minmax(0, 1040px);
+  }
+
+  .article-layout:has(> .article-sidebar) .article-sidebar {
+    position: static;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 22px;
+    margin-top: 4px;
+  }
+
+  .article-layout:has(> .article-sidebar) .sidebar-box {
+    height: 100%;
   }
 
   .article-body {
     width: 100%;
     max-width: 1040px;
-    font-size: 1.2rem;
-    line-height: 1.76;
+    font-size: 1.28rem;
+    line-height: 1.78;
   }
 
   .article-thesis {
