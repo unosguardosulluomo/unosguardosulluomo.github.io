@@ -43,6 +43,27 @@
   }
 
   const path=location.pathname;
+
+  if(path.endsWith('article-pickpocket-venezia.html')){
+    const headings=[...document.querySelectorAll('h3')];
+    const adelinaHeading=headings.find(h=>h.textContent.includes('Ieri, oggi, domani'));
+    if(adelinaHeading){
+      let node=adelinaHeading.nextElementSibling;
+      while(node && node.tagName!=='FIGURE') node=node.nextElementSibling;
+      if(node){
+        const image=node.querySelector('img');
+        const caption=node.querySelector('figcaption');
+        if(image){
+          image.src='https://it.wikipedia.org/wiki/Special:Redirect/file/Ieri_oggi_domani_primo_episodio.jpg';
+          image.alt='Sophia Loren nei panni di Adelina nel primo episodio di Ieri, oggi, domani';
+        }
+        if(caption){
+          caption.innerHTML='Adelina nel primo episodio di <em>Ieri, oggi, domani</em> (Vittorio De Sica, 1963). Fotogramma: Wikipedia, file “Ieri oggi domani primo episodio.jpg”. Riproduzione contestuale a fini di critica e discussione del film.';
+        }
+      }
+    }
+  }
+
   if((path==='/' || path.endsWith('/index.html')) && !document.getElementById('scudo-parlamentare-home')){
     const section=[...document.querySelectorAll('section.story-grid')].find(s=>s.getAttribute('aria-label')==='Politica italiana');
     if(section){
