@@ -54,11 +54,11 @@
         const image=node.querySelector('img');
         const caption=node.querySelector('figcaption');
         if(image){
-          image.src='https://it.wikipedia.org/wiki/Special:Redirect/file/Ieri_oggi_domani_primo_episodio.jpg';
-          image.alt='Sophia Loren nei panni di Adelina nel primo episodio di Ieri, oggi, domani';
+          image.src='https://iicsanfrancisco.esteri.it/wp-content/uploads/2024/02/300px-Ieri_oggi_domani_primo_episodio.jpg';
+          image.alt='Sophia Loren e Marcello Mastroianni nell’episodio Adelina di Ieri, oggi, domani';
         }
         if(caption){
-          caption.innerHTML='Adelina nel primo episodio di <em>Ieri, oggi, domani</em> (Vittorio De Sica, 1963). Fotogramma: Wikipedia, file “Ieri oggi domani primo episodio.jpg”. Riproduzione contestuale a fini di critica e discussione del film.';
+          caption.innerHTML='Adelina e Carmine nel primo episodio di <em>Ieri, oggi, domani</em> (Vittorio De Sica, 1963). Immagine: Istituto Italiano di Cultura di San Francisco – Ministero degli Affari Esteri e della Cooperazione Internazionale.';
         }
       }
     }
