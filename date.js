@@ -152,4 +152,30 @@
       list.prepend(item);
     }
   }
+
+  const sigHref='article-sigfrido-ultima-battaglia.html';
+  const sigImage='https://www.gedistatic.it/content/gnn/img/lastampa/2026/04/30/132759559-cb1ffd4e-50de-409a-938c-37af4bdceb2e.jpg';
+
+  if((path==='/' || path.endsWith('/index.html')) && !document.getElementById('sigfrido-home')){
+    const section=[...document.querySelectorAll('section.story-grid')].find(s=>s.getAttribute('aria-label')==='Politica italiana');
+    if(section){
+      const card=document.createElement('article');
+      card.className='story-card';
+      card.id='sigfrido-home';
+      card.innerHTML=`<a class="story-image" href="${sigHref}"><img src="${sigImage}" alt="Sigfrido Ranucci" loading="lazy"></a><p class="eyebrow">Informazione, giustizia e potere</p><h3><a class="headline-link" href="${sigHref}">SIGFRIDO E L’ULTIMA BATTAGLIA</a></h3><p>Oltre 220 azioni legali, Report, politica, Rai, audience e il confine tra inchiesta e spettacolo del conflitto.</p><a class="read-more" href="${sigHref}">Leggi l’indagine →</a>`;
+      section.prepend(card);
+    }
+  }
+
+  if((path.endsWith('/indagini.html') || path.endsWith('indagini.html')) && !document.getElementById('sigfrido-ultima-battaglia')){
+    const list=document.querySelector('.article-list');
+    if(list){
+      const item=document.createElement('article');
+      item.id='sigfrido-ultima-battaglia';
+      item.dataset.category='politica-italiana';
+      item.dataset.topics='ranucci report rai querele informazione giustizia politica audience mediaset';
+      item.innerHTML=`<a class="story-image" href="${sigHref}"><img src="${sigImage}" alt="Sigfrido Ranucci" loading="lazy"></a><div class="article-copy"><p class="eyebrow">Politica italiana</p><h2><a class="headline-link" href="${sigHref}">SIGFRIDO E L’ULTIMA BATTAGLIA</a></h2><p>Oltre 220 azioni legali, Report, politica, Rai, audience e potere mediatico: quando il conflitto diventa parte del prodotto.</p><div class="topic-list"><span>Ranucci</span><span>Report</span><span>Rai</span><span>Querele</span><span>Informazione</span></div><a class="read-more" href="${sigHref}">Leggi l’indagine →</a></div>`;
+      list.prepend(item);
+    }
+  }
 })();
