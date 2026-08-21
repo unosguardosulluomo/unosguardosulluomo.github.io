@@ -180,7 +180,7 @@
   }
 
   const dubHref='article-dublinati.html';
-  const dubImage='https://commons.wikimedia.org/wiki/Special:Redirect/file/Map_of_the_Schengen_Area.svg?width=1200';
+  const dubImage='https://commons.wikimedia.org/wiki/Special:Redirect/file/Voting_session_at_the_European_Parliament_-_54056837075.jpg?width=1400';
 
   if(path==='/' || path.endsWith('/index.html')){
     const politics=[...document.querySelectorAll('section.story-grid')].find(s=>s.getAttribute('aria-label')==='Politica italiana');
