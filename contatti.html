@@ -12,6 +12,8 @@
   <meta property="og:image" content="https://unosguardosulluomo.github.io/assets/testata.webp">
   <title>Contatti — Uno Sguardo sull'Uomo</title>
   <link rel="stylesheet" href="styles.css?v=20260811-mobile">
+  <link rel="stylesheet" href="navigation.css?v=20260821-1">
+  <link rel="stylesheet" href="contatti.css?v=20260821-1">
 </head>
 <body>
 <main class="newspaper">
@@ -19,18 +21,67 @@
   <header class="masthead"><a href="index.html" aria-label="Prima pagina"><img src="assets/testata.webp" alt="Uno Sguardo sull'Uomo"></a></header>
   <nav class="nav" aria-label="Navigazione principale"><a href="index.html">Prima pagina</a><a href="indagini.html">Indagini</a><a href="metodo.html">Metodo</a><a href="chi-siamo.html">Chi siamo</a><a href="contatti.html" aria-current="page">Contatti</a></nav>
 
-  <header class="page-header">
-    <p class="eyebrow">La redazione</p>
+  <header class="contact-intro">
     <h1>Contatti</h1>
-    <p>Segnalazioni, proposte di indagine e comunicazioni con la redazione.</p>
+    <p>Segnala un fatto, proponi un’indagine o scrivi alla redazione.</p>
   </header>
 
-  <article class="prose">
-    <p class="opening">Per scrivere a UNO SGUARDO SULL’UOMO puoi utilizzare l’indirizzo della redazione.</p>
-    <h2>Email</h2>
-    <p><a class="read-more" href="mailto:unosguardosulluomo@gmail.com">unosguardosulluomo@gmail.com</a></p>
-    <p>Puoi contattarci per segnalarci un fatto, proporre un tema da approfondire o inviare una comunicazione relativa ai dossier pubblicati.</p>
-  </article>
+  <section class="contact-layout" aria-label="Contatti con la redazione">
+    <div class="contact-form-panel">
+      <h2>Scrivi alla redazione</h2>
+      <form class="contact-form" action="https://formspree.io/f/xgawqajy" method="post">
+        <input type="hidden" name="subject" value="Nuovo contatto dal sito — {{ motivo }}">
+
+        <div class="form-field">
+          <label for="nome">Nome</label>
+          <input id="nome" name="nome" type="text" autocomplete="given-name" required>
+        </div>
+
+        <div class="form-field">
+          <label for="cognome">Cognome</label>
+          <input id="cognome" name="cognome" type="text" autocomplete="family-name" required>
+        </div>
+
+        <div class="form-field full">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" required>
+        </div>
+
+        <div class="form-field full">
+          <label for="motivo">Motivo del contatto</label>
+          <select id="motivo" name="motivo" required>
+            <option value="" selected disabled>Seleziona</option>
+            <option value="Segnalazione">Segnalazione</option>
+            <option value="Proposta di indagine">Proposta di indagine</option>
+            <option value="Informazioni">Informazioni</option>
+            <option value="Collaborazione">Collaborazione</option>
+            <option value="Altro">Altro</option>
+          </select>
+        </div>
+
+        <div class="form-field full">
+          <label for="messaggio">Messaggio</label>
+          <textarea id="messaggio" name="messaggio" required></textarea>
+        </div>
+
+        <div class="form-consent">
+          <input id="privacy" name="privacy" type="checkbox" value="accettata" required>
+          <label for="privacy">Ho letto l’<a href="privacy-cookie.html" target="_blank" rel="noopener">informativa privacy</a> e autorizzo il trattamento dei dati forniti per gestire la mia richiesta.</label>
+        </div>
+
+        <div class="form-actions">
+          <button class="contact-submit" type="submit">Invia alla redazione →</button>
+        </div>
+      </form>
+    </div>
+
+    <aside class="contact-side-panel">
+      <h2>Email</h2>
+      <p>Puoi anche scrivere direttamente alla redazione.</p>
+      <a class="contact-email" href="mailto:unosguardosulluomo@gmail.com">unosguardosulluomo@gmail.com</a>
+      <p class="contact-note">I dati inviati attraverso il modulo vengono utilizzati esclusivamente per leggere e gestire la richiesta ricevuta.</p>
+    </aside>
+  </section>
 
   <footer class="footer"><span>Uno Sguardo sull’Uomo — Contatti</span><span><a href="privacy-cookie.html">Privacy e Cookie Policy</a></span><span><a href="mailto:unosguardosulluomo@gmail.com">unosguardosulluomo@gmail.com</a></span></footer>
 </main>
