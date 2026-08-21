@@ -32,7 +32,6 @@
     article68Fix.rel='stylesheet';
     article68Fix.href='article-68-fix.css?v=20260814-2';
     document.head.appendChild(article68Fix);
-
     const hero=document.querySelector('.article-hero img');
     if(hero){
       hero.src=cover;
@@ -70,36 +69,7 @@
       const card=document.createElement('article');
       card.className='story-card';
       card.id='scudo-parlamentare-home';
-
-      const imageLink=document.createElement('a');
-      imageLink.className='story-image';
-      imageLink.href=href;
-      const image=document.createElement('img');
-      image.src=cover;
-      image.alt='La Costituzione della Repubblica italiana';
-      image.loading='lazy';
-      imageLink.appendChild(image);
-
-      const eyebrow=document.createElement('p');
-      eyebrow.className='eyebrow';
-      eyebrow.textContent='Costituzione e Parlamento';
-
-      const heading=document.createElement('h3');
-      const headingLink=document.createElement('a');
-      headingLink.className='headline-link';
-      headingLink.href=href;
-      headingLink.textContent='Da scudo contro il potere a scudo della parola?';
-      heading.appendChild(headingLink);
-
-      const summary=document.createElement('p');
-      summary.textContent='Tre secoli di immunità parlamentare, dalle origini alla politica della comunicazione permanente.';
-
-      const readMore=document.createElement('a');
-      readMore.className='read-more';
-      readMore.href=href;
-      readMore.textContent='Leggi l’indagine →';
-
-      card.append(imageLink,eyebrow,heading,summary,readMore);
+      card.innerHTML=`<a class="story-image" href="${href}"><img src="${cover}" alt="La Costituzione della Repubblica italiana" loading="lazy"></a><p class="eyebrow">Costituzione e Parlamento</p><h3><a class="headline-link" href="${href}">Da scudo contro il potere a scudo della parola?</a></h3><p>Tre secoli di immunità parlamentare, dalle origini alla politica della comunicazione permanente.</p><a class="read-more" href="${href}">Leggi l’indagine →</a>`;
       section.prepend(card);
     }
   }
@@ -111,44 +81,7 @@
       item.id='scudo-parlamentare';
       item.dataset.category='politica-italiana';
       item.dataset.topics='costituzione parlamento immunita prima-repubblica';
-
-      const imageLink=document.createElement('a');
-      imageLink.className='story-image';
-      imageLink.href=href;
-      const image=document.createElement('img');
-      image.src=cover;
-      image.alt='La Costituzione della Repubblica italiana';
-      image.loading='lazy';
-      imageLink.appendChild(image);
-
-      const copy=document.createElement('div');
-      copy.className='article-copy';
-
-      const eyebrow=document.createElement('p');
-      eyebrow.className='eyebrow';
-      eyebrow.textContent='Politica italiana';
-
-      const heading=document.createElement('h2');
-      const headingLink=document.createElement('a');
-      headingLink.className='headline-link';
-      headingLink.href=href;
-      headingLink.textContent='DA SCUDO CONTRO IL POTERE A SCUDO DELLA PAROLA?';
-      heading.appendChild(headingLink);
-
-      const summary=document.createElement('p');
-      summary.textContent='Tre secoli di immunità parlamentare: 1689, 1789, 1948, la svolta del 1993 e la politica della comunicazione permanente.';
-
-      const topics=document.createElement('div');
-      topics.className='topic-list';
-      ['Costituzione','Parlamento','Immunità'].forEach(t=>{const s=document.createElement('span'); s.textContent=t; topics.appendChild(s);});
-
-      const readMore=document.createElement('a');
-      readMore.className='read-more';
-      readMore.href=href;
-      readMore.textContent='Leggi l’indagine →';
-
-      copy.append(eyebrow,heading,summary,topics,readMore);
-      item.append(imageLink,copy);
+      item.innerHTML=`<a class="story-image" href="${href}"><img src="${cover}" alt="La Costituzione della Repubblica italiana" loading="lazy"></a><div class="article-copy"><p class="eyebrow">Politica italiana</p><h2><a class="headline-link" href="${href}">DA SCUDO CONTRO IL POTERE A SCUDO DELLA PAROLA?</a></h2><p>Tre secoli di immunità parlamentare: 1689, 1789, 1948, la svolta del 1993 e la politica della comunicazione permanente.</p><div class="topic-list"><span>Costituzione</span><span>Parlamento</span><span>Immunità</span></div><a class="read-more" href="${href}">Leggi l’indagine →</a></div>`;
       list.prepend(item);
     }
   }
@@ -183,6 +116,11 @@
   const dubImage='https://commons.wikimedia.org/wiki/Special:Redirect/file/Voting_session_at_the_European_Parliament_-_54056837075.jpg?width=1400';
 
   if(path==='/' || path.endsWith('/index.html')){
+    const leadStory=document.querySelector('.lead-grid .lead-story');
+    if(leadStory){
+      leadStory.innerHTML=`<a class="story-image" href="${dubHref}" aria-label="Leggi il dossier Dublinati"><img src="${dubImage}" alt="Sessione di voto al Parlamento europeo"></a><p class="eyebrow">Politica italiana • Europa</p><h1><a class="headline-link" href="${dubHref}">DUBLINATI — IL BOOMERANG CHE ARRIVA DA LONTANO</a></h1><p class="standfirst">Schlein, Meloni, AMMR, Ceuta e il compromesso europeo che riporta i trasferimenti al centro dello scontro politico.</p><p class="byline">Indagine della redazione</p><a class="read-more" href="${dubHref}">Continua l’indagine →</a>`;
+    }
+
     const politics=[...document.querySelectorAll('section.story-grid')].find(s=>s.getAttribute('aria-label')==='Politica italiana');
     if(politics && !document.getElementById('dublinati-home')){
       const card=document.createElement('article');
@@ -190,17 +128,6 @@
       card.id='dublinati-home';
       card.innerHTML=`<a class="story-image" href="${dubHref}"><img src="${dubImage}" alt="Dossier Dublinati" loading="lazy"></a><p class="eyebrow">Politica italiana • Europa</p><h3><a class="headline-link" href="${dubHref}">DUBLINATI — IL BOOMERANG CHE ARRIVA DA LONTANO</a></h3><p>Schlein, Meloni, AMMR, Ceuta e il compromesso europeo che riporta i trasferimenti al centro dello scontro politico.</p><a class="read-more" href="${dubHref}">Leggi l’indagine →</a>`;
       politics.prepend(card);
-    }
-    const lead=document.querySelector('.lead-grid');
-    if(lead && !document.getElementById('dublinati-evidenza')){
-      const side=lead.querySelector('aside');
-      if(side){
-        const item=document.createElement('article');
-        item.className='side-story';
-        item.id='dublinati-evidenza';
-        item.innerHTML=`<a class="story-image" href="${dubHref}"><img src="${dubImage}" alt="Dossier Dublinati" loading="lazy"></a><p class="eyebrow">Politica italiana • Europa</p><h2><a class="headline-link" href="${dubHref}">DUBLINATI</a></h2><p>Il boomerang che arriva da lontano: Schlein, Meloni, AMMR e Ceuta.</p><a class="read-more" href="${dubHref}">Leggi →</a>`;
-        side.prepend(item);
-      }
     }
   }
 
@@ -210,7 +137,7 @@
       const item=document.createElement('article');
       item.id='dublinati';
       item.dataset.category='politica-italiana';
-      item.dataset.topics='dublinati schlein meloni amm r ammr ceuta albania unione-europea migrazione';
+      item.dataset.topics='dublinati schlein meloni ammr ceuta albania unione-europea migrazione';
       item.innerHTML=`<a class="story-image" href="${dubHref}"><img src="${dubImage}" alt="Dossier Dublinati" loading="lazy"></a><div class="article-copy"><p class="eyebrow">Politica italiana • Europa</p><h2><a class="headline-link" href="${dubHref}">DUBLINATI — IL BOOMERANG CHE ARRIVA DA LONTANO</a></h2><p>Dublino, AMMR, voto del 2024, Albania e ripartenza dei trasferimenti nel 2026: chi ha costruito il sistema che oggi tutti denunciano?</p><div class="topic-list"><span>Dublinati</span><span>Schlein</span><span>Meloni</span><span>AMMR</span><span>Ceuta</span></div><a class="read-more" href="${dubHref}">Leggi l’indagine →</a></div>`;
       list.prepend(item);
     }
