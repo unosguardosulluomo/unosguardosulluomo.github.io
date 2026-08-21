@@ -33,9 +33,7 @@
 }
 
 .archive-index a:hover,
-.archive-index a:focus-visible {
-  color: var(--accent);
-}
+.archive-index a:focus-visible { color: var(--accent); }
 
 .archive-section {
   scroll-margin-top: 18px;
@@ -76,14 +74,15 @@
 .archive-card {
   min-width: 0;
   padding: 0 20px 25px;
-  border-bottom: 1px solid rgba(40, 33, 23, .32);
 }
 
 .archive-card:nth-child(3n + 1) { padding-left: 0; }
 .archive-card:nth-child(3n) { padding-right: 0; }
 .archive-card:not(:nth-child(3n + 1)) { border-left: 1px solid var(--rule); }
-.archive-card:nth-last-child(-n + 3) { border-bottom: 0; }
-.archive-card:nth-child(n + 4) { padding-top: 24px; }
+.archive-card:nth-child(n + 4) {
+  padding-top: 24px;
+  border-top: 1px solid rgba(40, 33, 23, .32);
+}
 
 .archive-card .story-image {
   aspect-ratio: 16 / 9;
@@ -102,9 +101,7 @@
   text-transform: uppercase;
 }
 
-.archive-meta .archive-category {
-  color: var(--accent);
-}
+.archive-meta .archive-category { color: var(--accent); }
 
 .archive-card h3 {
   margin: 0 0 9px;
@@ -118,9 +115,7 @@
   line-height: 1.48;
 }
 
-.archive-card .read-more {
-  margin-top: 2px;
-}
+.archive-card .read-more { margin-top: 2px; }
 
 .archive-back {
   display: inline-block;
@@ -143,25 +138,11 @@
     gap: 10px 12px;
   }
 
-  .archive-index a {
-    font-size: .68rem;
-  }
-
-  .archive-section {
-    margin-bottom: 34px;
-  }
-
-  .archive-section-header {
-    display: block;
-  }
-
-  .archive-section-header p {
-    margin-top: 7px;
-  }
-
-  .archive-grid {
-    grid-template-columns: 1fr;
-  }
+  .archive-index a { font-size: .68rem; }
+  .archive-section { margin-bottom: 34px; }
+  .archive-section-header { display: block; }
+  .archive-section-header p { margin-top: 7px; }
+  .archive-grid { grid-template-columns: 1fr; }
 
   .archive-card,
   .archive-card:nth-child(3n + 1),
@@ -169,10 +150,10 @@
   .archive-card:nth-child(n + 4) {
     padding: 20px 0;
     border-left: 0;
+    border-top: 0;
     border-bottom: 1px solid var(--rule);
   }
 
   .archive-card:first-child { padding-top: 0; }
   .archive-card:last-child { border-bottom: 0; }
-  .archive-card:nth-last-child(-n + 3):not(:last-child) { border-bottom: 1px solid var(--rule); }
 }
