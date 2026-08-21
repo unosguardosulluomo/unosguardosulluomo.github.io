@@ -178,4 +178,41 @@
       list.prepend(item);
     }
   }
+
+  const dubHref='article-dublinati.html';
+  const dubImage='https://commons.wikimedia.org/wiki/Special:Redirect/file/Map_of_the_Schengen_Area.svg?width=1200';
+
+  if(path==='/' || path.endsWith('/index.html')){
+    const politics=[...document.querySelectorAll('section.story-grid')].find(s=>s.getAttribute('aria-label')==='Politica italiana');
+    if(politics && !document.getElementById('dublinati-home')){
+      const card=document.createElement('article');
+      card.className='story-card';
+      card.id='dublinati-home';
+      card.innerHTML=`<a class="story-image" href="${dubHref}"><img src="${dubImage}" alt="Dossier Dublinati" loading="lazy"></a><p class="eyebrow">Politica italiana • Europa</p><h3><a class="headline-link" href="${dubHref}">DUBLINATI — IL BOOMERANG CHE ARRIVA DA LONTANO</a></h3><p>Schlein, Meloni, AMMR, Ceuta e il compromesso europeo che riporta i trasferimenti al centro dello scontro politico.</p><a class="read-more" href="${dubHref}">Leggi l’indagine →</a>`;
+      politics.prepend(card);
+    }
+    const lead=document.querySelector('.lead-grid');
+    if(lead && !document.getElementById('dublinati-evidenza')){
+      const side=lead.querySelector('aside');
+      if(side){
+        const item=document.createElement('article');
+        item.className='side-story';
+        item.id='dublinati-evidenza';
+        item.innerHTML=`<a class="story-image" href="${dubHref}"><img src="${dubImage}" alt="Dossier Dublinati" loading="lazy"></a><p class="eyebrow">Politica italiana • Europa</p><h2><a class="headline-link" href="${dubHref}">DUBLINATI</a></h2><p>Il boomerang che arriva da lontano: Schlein, Meloni, AMMR e Ceuta.</p><a class="read-more" href="${dubHref}">Leggi →</a>`;
+        side.prepend(item);
+      }
+    }
+  }
+
+  if((path.endsWith('/indagini.html') || path.endsWith('indagini.html')) && !document.getElementById('dublinati')){
+    const list=document.querySelector('.article-list');
+    if(list){
+      const item=document.createElement('article');
+      item.id='dublinati';
+      item.dataset.category='politica-italiana';
+      item.dataset.topics='dublinati schlein meloni amm r ammr ceuta albania unione-europea migrazione';
+      item.innerHTML=`<a class="story-image" href="${dubHref}"><img src="${dubImage}" alt="Dossier Dublinati" loading="lazy"></a><div class="article-copy"><p class="eyebrow">Politica italiana • Europa</p><h2><a class="headline-link" href="${dubHref}">DUBLINATI — IL BOOMERANG CHE ARRIVA DA LONTANO</a></h2><p>Dublino, AMMR, voto del 2024, Albania e ripartenza dei trasferimenti nel 2026: chi ha costruito il sistema che oggi tutti denunciano?</p><div class="topic-list"><span>Dublinati</span><span>Schlein</span><span>Meloni</span><span>AMMR</span><span>Ceuta</span></div><a class="read-more" href="${dubHref}">Leggi l’indagine →</a></div>`;
+      list.prepend(item);
+    }
+  }
 })();
