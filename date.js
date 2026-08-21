@@ -24,6 +24,11 @@
   editorialStandard.href='editorial-standard.css?v=20260812-1';
   document.head.appendChild(editorialStandard);
 
+  const navigationStyle=document.createElement('link');
+  navigationStyle.rel='stylesheet';
+  navigationStyle.href='navigation.css?v=20260821-1';
+  document.head.appendChild(navigationStyle);
+
   const cover='https://archivio.quirinale.it/bookreader//la_costituzione_volume_cosentino/LA_COSTITUZIONE_DELLA_REPUBBLICA_ITALIANA_121.jpg';
   const href='article-scudo-parlamentare.html';
 
@@ -42,6 +47,14 @@
   }
 
   const path=location.pathname;
+  const nav=document.querySelector('.nav');
+  if(nav && !nav.querySelector('a[href="contatti.html"]')){
+    const contactLink=document.createElement('a');
+    contactLink.href='contatti.html';
+    contactLink.textContent='Contatti';
+    if(path.endsWith('/contatti.html') || path.endsWith('contatti.html')) contactLink.setAttribute('aria-current','page');
+    nav.appendChild(contactLink);
+  }
 
   if(path.endsWith('article-pickpocket-venezia.html')){
     const headings=[...document.querySelectorAll('h3')];
