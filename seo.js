@@ -1,5 +1,7 @@
 (function(){
   const SITE='https://unosguardosulluomo.github.io';
+  const BRAND='Uno Sguardo sull’Uomo';
+  const BRAND_ALIASES=['UNO SGUARDO SULL\'UOMO','unosguardosulluomo'];
   const cleanPath=location.pathname.endsWith('/index.html') ? '/' : location.pathname;
   const canonicalUrl=SITE + (cleanPath.startsWith('/') ? cleanPath : '/' + cleanPath);
   const categoryMap={
@@ -20,6 +22,14 @@
     document.head.appendChild(canonical);
   }
   canonical.href=canonicalUrl;
+
+  let ogSiteName=document.querySelector('meta[property="og:site_name"]');
+  if(!ogSiteName){
+    ogSiteName=document.createElement('meta');
+    ogSiteName.setAttribute('property','og:site_name');
+    document.head.appendChild(ogSiteName);
+  }
+  ogSiteName.content='UNO SGUARDO SULL\'UOMO';
 
   const description=document.querySelector('meta[name="description"]')?.content || '';
   const ogImage=document.querySelector('meta[property="og:image"]')?.content || `${SITE}/assets/testata.webp`;
@@ -49,15 +59,29 @@
     .filter(Boolean);
 
   const publisher={
-    '@type':'Organization',
+    '@type':['Organization','NewsMediaOrganization'],
     '@id':`${SITE}/#organization`,
-    name:'Uno Sguardo sull’Uomo',
+    name:BRAND,
+    alternateName:BRAND_ALIASES,
     url:`${SITE}/`,
+    description:'Progetto editoriale indipendente italiano di approfondimento: indagini, dati, documenti e ricostruzione dei fatti oltre la narrazione.',
+    email:'mailto:unosguardosulluomo@gmail.com',
     logo:{'@type':'ImageObject',url:`${SITE}/assets/testata.webp`},
     sameAs:[
       'https://www.facebook.com/profile.php?id=61593043131759',
       'https://www.linkedin.com/company/unosguardosulluomo/'
     ]
+  };
+
+  const website={
+    '@type':'WebSite',
+    '@id':`${SITE}/#website`,
+    url:`${SITE}/`,
+    name:BRAND,
+    alternateName:BRAND_ALIASES,
+    description:'Indagini, dati e documenti per osservare i fatti oltre la narrazione.',
+    publisher:{'@id':`${SITE}/#organization`},
+    inLanguage:'it-IT'
   };
 
   function breadcrumb(items){
@@ -80,8 +104,9 @@
       url:canonicalUrl,
       image:[ogImage],
       inLanguage:'it-IT',
+      isPartOf:{'@id':`${SITE}/#website`},
       publisher:{'@id':`${SITE}/#organization`},
-      author:{'@type':'Organization',name:'Redazione Uno Sguardo sull’Uomo'}
+      author:{'@type':'Organization',name:'Redazione Uno Sguardo sull’Uomo',url:`${SITE}/chi-siamo.html`}
     };
     if(datePublished) article.datePublished=datePublished;
     if(categoryName) article.articleSection=categoryName;
@@ -91,22 +116,11 @@
     if(categoryPath) crumbs.push({name:categoryName,url:`${SITE}/${categoryPath}`});
     crumbs.push({name:title,url:canonicalUrl});
 
-    data={'@context':'https://schema.org','@graph':[publisher,article,breadcrumb(crumbs)]};
+    data={'@context':'https://schema.org','@graph':[publisher,website,article,breadcrumb(crumbs)]};
   } else if(cleanPath==='/' || cleanPath===''){
     data={
       '@context':'https://schema.org',
-      '@graph':[
-        publisher,
-        {
-          '@type':'WebSite',
-          '@id':`${SITE}/#website`,
-          url:`${SITE}/`,
-          name:'Uno Sguardo sull’Uomo',
-          description:description,
-          publisher:{'@id':`${SITE}/#organization`},
-          inLanguage:'it-IT'
-        }
-      ]
+      '@graph':[publisher,website]
     };
   } else if(document.querySelector('.archive-index, .archive-grid')){
     const page={
@@ -116,7 +130,8 @@
       description:description,
       url:canonicalUrl,
       inLanguage:'it-IT',
-      isPartOf:{'@type':'WebSite','@id':`${SITE}/#website`,url:`${SITE}/`,name:'Uno Sguardo sull’Uomo'}
+      isPartOf:{'@id':`${SITE}/#website`},
+      publisher:{'@id':`${SITE}/#organization`}
     };
     const crumbs=[{name:'Prima pagina',url:`${SITE}/`}];
     if(cleanPath.endsWith('/indagini.html') || cleanPath.endsWith('indagini.html')){
@@ -124,17 +139,19 @@
     } else {
       crumbs.push({name:'Indagini',url:`${SITE}/indagini.html`},{name:title,url:canonicalUrl});
     }
-    data={'@context':'https://schema.org','@graph':[page,breadcrumb(crumbs)]};
+    data={'@context':'https://schema.org','@graph':[publisher,website,page,breadcrumb(crumbs)]};
   } else {
-    data={
-      '@context':'https://schema.org',
+    const page={
       '@type':'WebPage',
+      '@id':`${canonicalUrl}#webpage`,
       name:title || document.title,
       description:description,
       url:canonicalUrl,
       inLanguage:'it-IT',
-      isPartOf:{'@type':'WebSite',url:`${SITE}/`,name:'Uno Sguardo sull’Uomo'}
+      isPartOf:{'@id':`${SITE}/#website`},
+      publisher:{'@id':`${SITE}/#organization`}
     };
+    data={'@context':'https://schema.org','@graph':[publisher,website,page]};
   }
 
   if(!document.querySelector('script[data-seo-schema]')){
