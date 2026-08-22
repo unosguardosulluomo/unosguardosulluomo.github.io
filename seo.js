@@ -17,7 +17,7 @@
   const h1=document.querySelector('h1')?.textContent?.replace(/\s+/g,' ').trim();
   const title=h1 || document.title.replace(/\s+[—|-]\s+Uno Sguardo sull[’']Uomo.*$/i,'').trim();
   const articleTime=document.querySelector('.article-header time[datetime], .article-meta time[datetime], article time[datetime]');
-  const datePublished=articleTime?.getAttribute('datetime') || document.querySelector('.current-date')?.getAttribute('datetime') || undefined;
+  const datePublished=articleTime?.getAttribute('datetime') || undefined;
 
   const publisher={
     '@type':'Organization',
