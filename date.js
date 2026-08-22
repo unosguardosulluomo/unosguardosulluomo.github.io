@@ -1,6 +1,6 @@
 (function(){
   const seoScript=document.createElement('script');
-  seoScript.src='seo.js?v=20260822-1';
+  seoScript.src='seo.js?v=20260822-2';
   seoScript.defer=true;
   document.head.appendChild(seoScript);
 
