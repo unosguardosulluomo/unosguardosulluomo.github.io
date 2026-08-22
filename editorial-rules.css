@@ -1,5 +1,20 @@
 /* Regole editoriali condivise per le pagine di indagine */
 
+/* Standard condiviso per le tabelle usate nei dossier: su schermi stretti
+   la tabella resta leggibile e scorre orizzontalmente senza allargare la pagina. */
+.table-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 22px 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
 @media (min-width: 761px) {
   .article-layout {
     display: grid;
@@ -88,5 +103,9 @@
 
   .data-table {
     font-size: .9rem;
+  }
+
+  .table-wrap table {
+    min-width: 620px;
   }
 }
