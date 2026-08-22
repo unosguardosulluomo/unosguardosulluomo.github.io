@@ -1,4 +1,9 @@
 (function(){
+  const seoScript=document.createElement('script');
+  seoScript.src='seo.js?v=20260822-1';
+  seoScript.defer=true;
+  document.head.appendChild(seoScript);
+
   const gaId='G-XMRPY5JL0Z';
   window.dataLayer=window.dataLayer||[];
   window.gtag=window.gtag||function(){window.dataLayer.push(arguments);};
