@@ -17,7 +17,8 @@ Prima di qualsiasi intervento leggere questo file e verificare lo stato corrente
 
 - Non abbreviare, riscrivere o rimuovere contenuti e fonti durante interventi tecnici.
 - Trattare data di pubblicazione, categoria, titolo, immagine, descrizione, argomenti e URL come metadati strutturali.
-- Conservare separatamente data di pubblicazione e data di aggiornamento.
+- La data di pubblicazione coincide con il primo inserimento Git del dossier e non cambia in seguito.
+- Conservare separatamente la data di pubblicazione e l'eventuale data di aggiornamento; una correzione successiva non sostituisce mai la data originale.
 - Ordinare archivi e sezioni cronologiche dalla pubblicazione più recente alla più vecchia.
 - La home è una prima pagina selettiva; Indagini mostra le tre pubblicazioni più recenti di ogni categoria; gli archivi conservano tutte le pubblicazioni.
 - Evitare copie indipendenti dello stesso dato e override JavaScript che riscrivano contenuti editoriali dopo il caricamento.
