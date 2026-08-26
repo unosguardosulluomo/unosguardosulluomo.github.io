@@ -15,6 +15,12 @@
   border-collapse: collapse;
 }
 
+/* Dossier Vannacci: usa la foto scelta dall'editore al posto della precedente elaborazione. */
+.article-hero img[src="assets/vannacci-dossier.png"] {
+  content: url("https://upload.wikimedia.org/wikipedia/commons/3/39/Roberto_Vannacci.jpg");
+  object-position: center 32%;
+}
+
 @media (min-width: 761px) {
   .article-layout {
     display: grid;
