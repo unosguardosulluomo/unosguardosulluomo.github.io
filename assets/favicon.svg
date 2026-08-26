@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Uno Sguardo sull'Uomo">
+  <rect width="64" height="64" rx="8" fill="#d8c5a5"/>
+  <rect x="5" y="5" width="54" height="54" rx="5" fill="none" stroke="#2c2925" stroke-width="3"/>
+  <text x="32" y="46" text-anchor="middle" font-family="Georgia, serif" font-size="42" font-weight="700" fill="#2c2925">U</text>
+</svg>
