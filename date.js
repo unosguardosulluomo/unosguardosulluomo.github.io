@@ -17,39 +17,21 @@
   const now=new Date();
   const months=['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
   const d=`${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-  document.querySelectorAll('.current-date').forEach(el=>{el.textContent=d; el.setAttribute('datetime', now.toISOString().slice(0,10));});
+  document.querySelectorAll('.current-date').forEach(el=>{
+    el.textContent=d;
+    el.setAttribute('datetime',now.toISOString().slice(0,10));
+  });
 
-  const fbMobileFix=document.createElement('link');
-  fbMobileFix.rel='stylesheet';
-  fbMobileFix.href='mobile-fb-fix.css?v=20260812-1';
-  document.head.appendChild(fbMobileFix);
-
-  const editorialStandard=document.createElement('link');
-  editorialStandard.rel='stylesheet';
-  editorialStandard.href='editorial-standard.css?v=20260812-1';
-  document.head.appendChild(editorialStandard);
-
-  const navigationStyle=document.createElement('link');
-  navigationStyle.rel='stylesheet';
-  navigationStyle.href='navigation.css?v=20260821-1';
-  document.head.appendChild(navigationStyle);
-
-  const cover='https://archivio.quirinale.it/bookreader//la_costituzione_volume_cosentino/LA_COSTITUZIONE_DELLA_REPUBBLICA_ITALIANA_121.jpg';
-  const href='article-scudo-parlamentare.html';
-
-  if(location.pathname.endsWith('article-scudo-parlamentare.html')){
-    const article68Fix=document.createElement('link');
-    article68Fix.rel='stylesheet';
-    article68Fix.href='article-68-fix.css?v=20260814-2';
-    document.head.appendChild(article68Fix);
-    const hero=document.querySelector('.article-hero img');
-    if(hero){
-      hero.src=cover;
-      hero.alt='La Costituzione della Repubblica italiana';
-      const caption=hero.closest('figure')?.querySelector('figcaption');
-      if(caption) caption.textContent='La Costituzione della Repubblica italiana. Archivio storico della Presidenza della Repubblica.';
-    }
-  }
+  [
+    ['mobile-fb-fix.css?v=20260812-1','stylesheet'],
+    ['editorial-standard.css?v=20260812-1','stylesheet'],
+    ['navigation.css?v=20260821-1','stylesheet']
+  ].forEach(([href,rel])=>{
+    const link=document.createElement('link');
+    link.rel=rel;
+    link.href=href;
+    document.head.appendChild(link);
+  });
 
   const path=location.pathname;
   const nav=document.querySelector('.nav');
@@ -59,6 +41,21 @@
     contactLink.textContent='Contatti';
     if(path.endsWith('/contatti.html') || path.endsWith('contatti.html')) contactLink.setAttribute('aria-current','page');
     nav.appendChild(contactLink);
+  }
+
+  if(path.endsWith('article-scudo-parlamentare.html')){
+    const article68Fix=document.createElement('link');
+    article68Fix.rel='stylesheet';
+    article68Fix.href='article-68-fix.css?v=20260814-2';
+    document.head.appendChild(article68Fix);
+
+    const hero=document.querySelector('.article-hero img');
+    if(hero){
+      hero.src='https://archivio.quirinale.it/bookreader//la_costituzione_volume_cosentino/LA_COSTITUZIONE_DELLA_REPUBBLICA_ITALIANA_121.jpg';
+      hero.alt='La Costituzione della Repubblica italiana';
+      const caption=hero.closest('figure')?.querySelector('figcaption');
+      if(caption) caption.textContent='La Costituzione della Repubblica italiana. Archivio storico della Presidenza della Repubblica.';
+    }
   }
 
   if(path.endsWith('article-pickpocket-venezia.html')){
@@ -78,86 +75,6 @@
           caption.innerHTML='Adelina e Carmine nel primo episodio di <em>Ieri, oggi, domani</em> (Vittorio De Sica, 1963). Immagine: Istituto Italiano di Cultura di San Francisco – Ministero degli Affari Esteri e della Cooperazione Internazionale.';
         }
       }
-    }
-  }
-
-  if((path==='/' || path.endsWith('/index.html')) && !document.getElementById('scudo-parlamentare-home')){
-    const section=[...document.querySelectorAll('section.story-grid')].find(s=>s.getAttribute('aria-label')==='Politica italiana');
-    if(section){
-      const card=document.createElement('article');
-      card.className='story-card';
-      card.id='scudo-parlamentare-home';
-      card.innerHTML=`<a class="story-image" href="${href}"><img src="${cover}" alt="La Costituzione della Repubblica italiana" loading="lazy"></a><p class="eyebrow">Costituzione e Parlamento</p><h3><a class="headline-link" href="${href}">Da scudo contro il potere a scudo della parola?</a></h3><p>Tre secoli di immunità parlamentare, dalle origini alla politica della comunicazione permanente.</p><a class="read-more" href="${href}">Leggi l’indagine →</a>`;
-      section.prepend(card);
-    }
-  }
-
-  if((path.endsWith('/indagini.html') || path.endsWith('indagini.html')) && !document.getElementById('scudo-parlamentare')){
-    const list=document.querySelector('.article-list');
-    if(list){
-      const item=document.createElement('article');
-      item.id='scudo-parlamentare';
-      item.dataset.category='politica-italiana';
-      item.dataset.topics='costituzione parlamento immunita prima-repubblica';
-      item.innerHTML=`<a class="story-image" href="${href}"><img src="${cover}" alt="La Costituzione della Repubblica italiana" loading="lazy"></a><div class="article-copy"><p class="eyebrow">Politica italiana</p><h2><a class="headline-link" href="${href}">DA SCUDO CONTRO IL POTERE A SCUDO DELLA PAROLA?</a></h2><p>Tre secoli di immunità parlamentare: 1689, 1789, 1948, la svolta del 1993 e la politica della comunicazione permanente.</p><div class="topic-list"><span>Costituzione</span><span>Parlamento</span><span>Immunità</span></div><a class="read-more" href="${href}">Leggi l’indagine →</a></div>`;
-      list.prepend(item);
-    }
-  }
-
-  const sigHref='article-sigfrido-ultima-battaglia.html';
-  const sigImage='https://www.gedistatic.it/content/gnn/img/lastampa/2026/04/30/132759559-cb1ffd4e-50de-409a-938c-37af4bdceb2e.jpg';
-
-  if((path==='/' || path.endsWith('/index.html')) && !document.getElementById('sigfrido-home')){
-    const section=[...document.querySelectorAll('section.story-grid')].find(s=>s.getAttribute('aria-label')==='Politica italiana');
-    if(section){
-      const card=document.createElement('article');
-      card.className='story-card';
-      card.id='sigfrido-home';
-      card.innerHTML=`<a class="story-image" href="${sigHref}"><img src="${sigImage}" alt="Sigfrido Ranucci" loading="lazy"></a><p class="eyebrow">Informazione, giustizia e potere</p><h3><a class="headline-link" href="${sigHref}">SIGFRIDO E L’ULTIMA BATTAGLIA</a></h3><p>Oltre 220 azioni legali, Report, politica, Rai, audience e il confine tra inchiesta e spettacolo del conflitto.</p><a class="read-more" href="${sigHref}">Leggi l’indagine →</a>`;
-      section.prepend(card);
-    }
-  }
-
-  if((path.endsWith('/indagini.html') || path.endsWith('indagini.html')) && !document.getElementById('sigfrido-ultima-battaglia')){
-    const list=document.querySelector('.article-list');
-    if(list){
-      const item=document.createElement('article');
-      item.id='sigfrido-ultima-battaglia';
-      item.dataset.category='politica-italiana';
-      item.dataset.topics='ranucci report rai querele informazione giustizia politica audience mediaset';
-      item.innerHTML=`<a class="story-image" href="${sigHref}"><img src="${sigImage}" alt="Sigfrido Ranucci" loading="lazy"></a><div class="article-copy"><p class="eyebrow">Politica italiana</p><h2><a class="headline-link" href="${sigHref}">SIGFRIDO E L’ULTIMA BATTAGLIA</a></h2><p>Oltre 220 azioni legali, Report, politica, Rai, audience e potere mediatico: quando il conflitto diventa parte del prodotto.</p><div class="topic-list"><span>Ranucci</span><span>Report</span><span>Rai</span><span>Querele</span><span>Informazione</span></div><a class="read-more" href="${sigHref}">Leggi l’indagine →</a></div>`;
-      list.prepend(item);
-    }
-  }
-
-  const dubHref='article-dublinati.html';
-  const dubImage='https://commons.wikimedia.org/wiki/Special:Redirect/file/Voting_session_at_the_European_Parliament_-_54056837075.jpg?width=1400';
-
-  if(path==='/' || path.endsWith('/index.html')){
-    const leadStory=document.querySelector('.lead-grid .lead-story');
-    if(leadStory){
-      leadStory.innerHTML=`<a class="story-image" href="${dubHref}" aria-label="Leggi il dossier Dublinati"><img src="${dubImage}" alt="Sessione di voto al Parlamento europeo"></a><p class="eyebrow">Politica italiana • Europa</p><h1><a class="headline-link" href="${dubHref}">DUBLINATI — IL BOOMERANG CHE ARRIVA DA LONTANO</a></h1><p class="standfirst">Schlein, Meloni, AMMR, Ceuta e il compromesso europeo che riporta i trasferimenti al centro dello scontro politico.</p><p class="byline">Indagine della redazione</p><a class="read-more" href="${dubHref}">Continua l’indagine →</a>`;
-    }
-
-    const politics=[...document.querySelectorAll('section.story-grid')].find(s=>s.getAttribute('aria-label')==='Politica italiana');
-    if(politics && !document.getElementById('dublinati-home')){
-      const card=document.createElement('article');
-      card.className='story-card';
-      card.id='dublinati-home';
-      card.innerHTML=`<a class="story-image" href="${dubHref}"><img src="${dubImage}" alt="Dossier Dublinati" loading="lazy"></a><p class="eyebrow">Politica italiana • Europa</p><h3><a class="headline-link" href="${dubHref}">DUBLINATI — IL BOOMERANG CHE ARRIVA DA LONTANO</a></h3><p>Schlein, Meloni, AMMR, Ceuta e il compromesso europeo che riporta i trasferimenti al centro dello scontro politico.</p><a class="read-more" href="${dubHref}">Leggi l’indagine →</a>`;
-      politics.prepend(card);
-    }
-  }
-
-  if((path.endsWith('/indagini.html') || path.endsWith('indagini.html')) && !document.getElementById('dublinati')){
-    const list=document.querySelector('.article-list');
-    if(list){
-      const item=document.createElement('article');
-      item.id='dublinati';
-      item.dataset.category='politica-italiana';
-      item.dataset.topics='dublinati schlein meloni ammr ceuta albania unione-europea migrazione';
-      item.innerHTML=`<a class="story-image" href="${dubHref}"><img src="${dubImage}" alt="Dossier Dublinati" loading="lazy"></a><div class="article-copy"><p class="eyebrow">Politica italiana • Europa</p><h2><a class="headline-link" href="${dubHref}">DUBLINATI — IL BOOMERANG CHE ARRIVA DA LONTANO</a></h2><p>Dublino, AMMR, voto del 2024, Albania e ripartenza dei trasferimenti nel 2026: chi ha costruito il sistema che oggi tutti denunciano?</p><div class="topic-list"><span>Dublinati</span><span>Schlein</span><span>Meloni</span><span>AMMR</span><span>Ceuta</span></div><a class="read-more" href="${dubHref}">Leggi l’indagine →</a></div>`;
-      list.prepend(item);
     }
   }
 })();
