@@ -15,13 +15,15 @@
     luglio:'07',agosto:'08',settembre:'09',ottobre:'10',novembre:'11',dicembre:'12'
   };
 
+  // Il canonical deve essere presente nell'HTML statico. Questo fallback serve
+  // solo a eventuali nuove pagine non ancora passate dall'audit SEO.
   let canonical=document.querySelector('link[rel="canonical"]');
   if(!canonical){
     canonical=document.createElement('link');
     canonical.rel='canonical';
+    canonical.href=canonicalUrl;
     document.head.appendChild(canonical);
   }
-  canonical.href=canonicalUrl;
 
   let ogSiteName=document.querySelector('meta[property="og:site_name"]');
   if(!ogSiteName){
@@ -53,6 +55,7 @@
       if(match && monthMap[match[2]]) datePublished=`${match[3]}-${monthMap[match[2]]}-${String(match[1]).padStart(2,'0')}`;
     }
   }
+  const dateModified=document.querySelector('meta[property="article:modified_time"]')?.content || undefined;
 
   const keywords=[...document.querySelectorAll('.topic-list span')]
     .map(el=>el.textContent.replace(/\s+/g,' ').trim())
@@ -109,6 +112,7 @@
       author:{'@type':'Organization',name:'Redazione Uno Sguardo sull’Uomo',url:`${SITE}/chi-siamo.html`}
     };
     if(datePublished) article.datePublished=datePublished;
+    if(dateModified) article.dateModified=dateModified;
     if(categoryName) article.articleSection=categoryName;
     if(keywords.length) article.keywords=keywords.join(', ');
 
