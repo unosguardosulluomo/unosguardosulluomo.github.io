@@ -23,4 +23,5 @@ Prima di qualsiasi intervento leggere questo file e verificare lo stato corrente
 - La home è una prima pagina selettiva; Indagini mostra le tre pubblicazioni più recenti di ogni categoria; gli archivi conservano tutte le pubblicazioni.
 - Evitare copie indipendenti dello stesso dato e override JavaScript che riscrivano contenuti editoriali dopo il caricamento.
 - Verificare sempre JavaScript e CSS globali, link locali, canonical, Open Graph, Schema.org, sitemap e resa mobile.
+- Nelle sezioni delle fonti citare ente o autore, titolo del documento o dell'articolo e data quando disponibile, senza mostrare URL e senza creare collegamenti esterni cliccabili. Conservare gli indirizzi usati per la verifica nel materiale di lavoro, non nella pagina pubblicata.
 - Distinguere chiaramente tra modifica preparata, modifica presente nel repository e comportamento verificato sul sito pubblico.
