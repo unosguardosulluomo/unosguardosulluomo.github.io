@@ -21,6 +21,7 @@ Prima di qualsiasi intervento leggere questo file e verificare lo stato corrente
 - Conservare separatamente la data di pubblicazione e l'eventuale data di aggiornamento; una correzione successiva non sostituisce mai la data originale.
 - Ordinare archivi e sezioni cronologiche dalla pubblicazione più recente alla più vecchia.
 - La home è una prima pagina selettiva; Indagini mostra le tre pubblicazioni più recenti di ogni categoria; gli archivi conservano tutte le pubblicazioni.
+- Nei dossier e nelle indagini, alla prima occorrenza di ogni acronimo o sigla scrivere prima la denominazione per esteso e poi l'acronimo tra parentesi, per esempio "Ministero delle infrastrutture e dei trasporti (MIT)". Nelle occorrenze successive si può usare il solo acronimo.
 - Evitare copie indipendenti dello stesso dato e override JavaScript che riscrivano contenuti editoriali dopo il caricamento.
 - Verificare sempre JavaScript e CSS globali, link locali, canonical, Open Graph, Schema.org, sitemap e resa mobile.
 - Nelle sezioni delle fonti citare ente o autore, titolo del documento o dell'articolo e data quando disponibile, senza mostrare URL e senza creare collegamenti esterni cliccabili. Conservare gli indirizzi usati per la verifica nel materiale di lavoro, non nella pagina pubblicata.
