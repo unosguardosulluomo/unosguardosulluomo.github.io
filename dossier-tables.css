@@ -1,0 +1,12 @@
+/* Reusable long-form dossier navigation and comparison tables. */
+.dossier-contents { margin: 24px 0; padding: 16px; border: 1px solid #b9afa1; }
+.dossier-contents summary { cursor: pointer; font-family: Arial, sans-serif; font-weight: 700; }
+.dossier-contents ol { padding-left: 1.4em; font-size: .92rem; }
+.dossier-contents li { margin: .55em 0; }
+.dossier-contents a { overflow-wrap: anywhere; }
+.table-hint { font-family: Arial, sans-serif; font-size: .88rem; }
+.data-table caption { text-align: left; font-weight: 700; padding: 0 0 12px; }
+.data-table thead th { background: #282117; color: #fff; }
+.data-table tbody th { background: #eee7dc; color: #282117; text-transform: none; letter-spacing: normal; min-width: 120px; }
+.data-table td { min-width: 125px; vertical-align: top; }
+.data-table-wrap:focus-visible { outline: 3px solid #8b2a21; outline-offset: 3px; }
