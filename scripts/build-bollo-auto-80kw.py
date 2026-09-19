@@ -86,7 +86,7 @@ out=f'''<!doctype html>
   <title>{esc(D['title'])} — Uno Sguardo sull'Uomo</title>
   <link rel="stylesheet" href="styles.css?v=20260811-mobile">
   <link rel="stylesheet" href="editorial-rules.css?v=20260812-1">
-  <link rel="stylesheet" href="dossier-tables.css?v=20260917-1">
+  <link rel="stylesheet" href="dossier-tables.css?v=20260919-2">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <script type="application/ld+json" data-seo-schema>{json.dumps(schema,ensure_ascii=False)}</script>
 </head>
