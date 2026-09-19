@@ -1,8 +1,8 @@
 """Generate the car-tax dossier and its cards from one editorial JSON source.
 
-Run from any directory with Python 3. Only this dossier, its home placement,
-its category's latest-three cards, its archive and sitemap entries are managed.
-No runtime JavaScript rewrites editorial content.
+Run from any directory with Python 3. The dossier, its category's latest-three
+cards, the complete chronological home rotation, its archive and sitemap
+entries are managed. No runtime JavaScript rewrites editorial content.
 """
 import html
 import json
@@ -137,19 +137,49 @@ indagini.write_text(s,encoding='utf-8')
 
 home=ROOT/'index.html'
 s=home.read_text(encoding='utf-8')
-match=re.search(r'<article class="lead-story"[^>]*>.*?</article>',s,re.S)
-assert match,'Home lead not found'
-old=match[0]
-s=s[:match.start()]+card('lead-story','h1',False)+s[match.end():]
-if D['slug'] not in old:
-    old=(old.replace('class="lead-story"','class="story-card"')
-         .replace(' fetchpriority="high"',' loading="lazy"')
-         .replace('<h1>','<h3>').replace('</h1>','</h3>'))
-    marker='<section class="story-grid" aria-label="Ultime indagini">'
-    start=s.index(marker)+len(marker)
-    end=s.index('</section>',start)
-    existing=re.findall(r'<article\b[^>]*>.*?</article>',s[start:end],re.S)
-    s=s[:start]+'\n      '+'\n      '.join([old]+existing[:2])+'\n    '+s[end:]
+
+def home_card(source, kind, heading, lazy=True):
+    source=re.sub(r'(<article\b[^>]*\bclass=")[^"]*(")',
+                  lambda m:m[1]+kind+m[2],source,count=1)
+    source=source.replace('<h3>',f'<{heading}>').replace('</h3>',f'</{heading}>')
+    def image_priority(match):
+        tag=re.sub(r'\s+(?:loading|fetchpriority)="[^"]*"','',match[0])
+        attribute=' loading="lazy"' if lazy else ' fetchpriority="high"'
+        return tag[:-1]+attribute+'>'
+    return re.sub(r'<img\b[^>]*>',image_priority,source,count=1)
+
+# Every home slot advances on publication. Cards are collected from the four
+# complete category archives, deduplicated and sorted by publication date.
+archive_cards={}
+for archive_path in ROOT.glob('archivio-*.html'):
+    archive_text=archive_path.read_text(encoding='utf-8')
+    for archive_card in re.findall(r'<article\b[^>]*>.*?</article>',archive_text,re.S):
+        published=re.search(r'<time[^>]+datetime="([\d-]+)"',archive_card)
+        headline=re.search(r'<a class="headline-link" href="([^"]+)"',archive_card)
+        if published and headline:
+            archive_cards[headline[1]]=(published[1],archive_card)
+latest_home=sorted(archive_cards.values(),key=lambda item:item[0],reverse=True)[:9]
+assert len(latest_home)==9,'Nine dated archive cards are required for the home page'
+rotated=[item[1] for item in latest_home]
+
+lead=home_card(rotated[0],'lead-story','h1',False)
+s,n=re.subn(r'<article class="lead-story"[^>]*>.*?</article>',lead,s,count=1,flags=re.S)
+assert n==1,'Home lead not found'
+
+side=''.join(home_card(item,'side-story','h2') for item in rotated[1:3])
+s,n=re.subn(r'(<section class="lead-grid"[^>]*>.*?<aside>).*?(</aside>)',
+            lambda m:m[1]+side+m[2],s,count=1,flags=re.S)
+assert n==1,'Home side stories not found'
+
+def replace_home_grid(source,label,cards):
+    pattern=r'(<section class="story-grid" aria-label="'+re.escape(label)+r'">).*?(</section>)'
+    replacement='\n      '+'\n      '.join(home_card(item,'story-card','h3') for item in cards)+'\n    '
+    result,count=re.subn(pattern,lambda m:m[1]+replacement+m[2],source,count=1,flags=re.S)
+    assert count==1,f'Home grid not found: {label}'
+    return result
+
+s=replace_home_grid(s,'Ultime indagini',rotated[3:6])
+s=replace_home_grid(s,'Altre indagini recenti',rotated[6:9])
 home.write_text(s,encoding='utf-8')
 
 for name in ('sitemap.xml','sitemap-google.xml'):
@@ -162,4 +192,4 @@ for name in ('sitemap.xml','sitemap-google.xml'):
         if re.search(pattern,s,re.S):s=re.sub(pattern,entry,s,count=1,flags=re.S)
         else:s=s.replace('</urlset>','  '+entry+'\n</urlset>')
     path.write_text(s,encoding='utf-8')
-print('Generated dossier, home, category archive, latest three and both sitemaps.')
+print('Generated dossier, chronological home, category archive, latest three and both sitemaps.')

@@ -72,6 +72,19 @@ for filename in ("index.html", "indagini.html", DATA["categoryPath"]):
 
 home = document(ROOT / "index.html")
 assert home.xpath("string(//article[contains(@class,'lead-story')][1]/@data-dossier)") == DATA["slug"]
+home_cards = home.xpath(
+    "//article["
+    "contains(concat(' ',normalize-space(@class),' '),' lead-story ') or "
+    "contains(concat(' ',normalize-space(@class),' '),' side-story ') or "
+    "contains(concat(' ',normalize-space(@class),' '),' story-card ')"
+    "]"
+)
+assert len(home_cards) == 9
+home_dates = [card.xpath("string(.//time/@datetime)") for card in home_cards]
+home_links = [card.xpath("string(.//a[contains(@class,'headline-link')]/@href)") for card in home_cards]
+assert all(home_dates), "Every home card must show its publication date"
+assert home_dates == sorted(home_dates, reverse=True), home_dates
+assert len(home_links) == len(set(home_links)), home_links
 
 for sitemap_name in ("sitemap.xml", "sitemap-google.xml"):
     tree = etree.parse(str(ROOT / sitemap_name))
