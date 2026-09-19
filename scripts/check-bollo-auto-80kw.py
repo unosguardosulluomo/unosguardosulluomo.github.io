@@ -1,0 +1,98 @@
+"""Static publication checks for the car-tax dossier."""
+
+import json
+from pathlib import Path
+from urllib.parse import urlparse
+
+from lxml import etree, html
+from PIL import Image
+
+
+ROOT = Path(__file__).resolve().parents[1]
+DATA = json.loads((ROOT / "editorial/bollo-auto-80kw.json").read_text(encoding="utf-8"))
+ARTICLE = ROOT / DATA["slug"]
+SITE = "https://unosguardosulluomo.github.io/"
+
+
+def document(path):
+    return html.fromstring(path.read_text(encoding="utf-8"))
+
+
+article = document(ARTICLE)
+assert len(article.xpath("//h1")) == 1
+assert article.xpath("string(//h1)").strip() == DATA["title"]
+assert article.xpath("string(//link[@rel='canonical']/@href)") == SITE + DATA["slug"]
+assert article.xpath("string(//meta[@name='description']/@content)") == DATA["description"]
+assert article.xpath("string(//meta[@property='og:image']/@content)") == SITE + DATA["image"]
+assert article.xpath("string(//meta[@property='article:published_time']/@content)") == DATA["datePublished"]
+assert article.xpath("string(//meta[@property='article:section']/@content)") == DATA["category"]
+
+schema = json.loads(article.xpath("string(//script[@type='application/ld+json'])"))
+news_article = next(item for item in schema["@graph"] if item.get("@type") == "NewsArticle")
+assert news_article["headline"] == DATA["title"]
+assert news_article["datePublished"] == DATA["datePublished"]
+assert news_article["articleSection"] == DATA["category"]
+
+ids = article.xpath("//@id")
+assert len(ids) == len(set(ids))
+article_text = " ".join(article.xpath("//article//text()"))
+for block in DATA["blocks"]:
+    if "text" in block:
+        assert block["text"] in article_text, block["text"][:80]
+    for row in block.get("rows", []):
+        for cell in row:
+            assert cell in article_text, cell
+
+source_section = article.xpath("//section[contains(concat(' ',normalize-space(@class),' '),' sources ')]")[0]
+assert not source_section.xpath(".//a")
+assert len(source_section.xpath(".//li")) == len(DATA["sources"])
+
+for attribute in ("href", "src"):
+    for value in article.xpath(f"//*[@{attribute}]/@{attribute}"):
+        parsed = urlparse(value)
+        if parsed.scheme or value.startswith("#") or value.startswith("mailto:") or value == "/":
+            continue
+        target = ROOT / parsed.path
+        assert target.exists(), f"Missing local target: {value}"
+
+for image_key in ("image",):
+    with Image.open(ROOT / DATA[image_key]) as image:
+        assert image.size == (DATA["imageWidth"], DATA["imageHeight"])
+for block in DATA["blocks"]:
+    if block["kind"] == "figure":
+        with Image.open(ROOT / block["image"]) as image:
+            assert image.size == (block["width"], block["height"])
+
+for filename in ("index.html", "indagini.html", DATA["categoryPath"]):
+    doc = document(ROOT / filename)
+    cards = doc.xpath(f"//article[@data-dossier='{DATA['slug']}']")
+    assert len(cards) == 1, filename
+    assert cards[0].xpath("string(.//time/@datetime)") == DATA["datePublished"]
+    assert cards[0].xpath("string(.//img/@src)") == DATA["image"]
+
+home = document(ROOT / "index.html")
+assert home.xpath("string(//article[contains(@class,'lead-story')][1]/@data-dossier)") == DATA["slug"]
+
+for sitemap_name in ("sitemap.xml", "sitemap-google.xml"):
+    tree = etree.parse(str(ROOT / sitemap_name))
+    namespace = {"s": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+    locations = tree.xpath("//s:loc/text()", namespaces=namespace)
+    assert len(locations) == len(set(locations))
+    assert locations.count(SITE + DATA["slug"]) == 1
+
+assert "Testo pronto per pubblicazione" not in ARTICLE.read_text(encoding="utf-8")
+assert "Dossier editoriale definitivo" not in ARTICLE.read_text(encoding="utf-8")
+
+print(
+    json.dumps(
+        {
+            "article": DATA["slug"],
+            "blocks": len(DATA["blocks"]),
+            "sources": len(DATA["sources"]),
+            "readingMinutes": DATA["readingMinutes"],
+            "images": 2,
+            "status": "ok",
+        },
+        ensure_ascii=False,
+    )
+)
