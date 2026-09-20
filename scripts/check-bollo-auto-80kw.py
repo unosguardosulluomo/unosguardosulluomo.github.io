@@ -111,7 +111,7 @@ print(
             "blocks": len(DATA["blocks"]),
             "sources": len(DATA["sources"]),
             "readingMinutes": DATA["readingMinutes"],
-            "images": 1 + int("socialImage" in DATA),
+            "images": 1 + int("socialImage" in DATA) + sum(block["kind"] == "figure" for block in DATA["blocks"]),
             "status": "ok",
         },
         ensure_ascii=False,
