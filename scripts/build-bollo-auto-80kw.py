@@ -7,16 +7,40 @@ entries are managed. No runtime JavaScript rewrites editorial content.
 import html
 import json
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-D = json.loads((ROOT / 'editorial/bollo-auto-80kw.json').read_text(encoding='utf-8'))
+data_path = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / 'editorial/bollo-auto-80kw.json'
+if not data_path.is_absolute():
+    data_path = ROOT / data_path
+D = json.loads(data_path.read_text(encoding='utf-8'))
 SITE = 'https://unosguardosulluomo.github.io/'
 esc = html.escape
 url = SITE + D['slug']
+social_image = D.get('socialImage', D['image'])
+social_image_width = D.get('socialImageWidth', D['imageWidth'])
+social_image_height = D.get('socialImageHeight', D['imageHeight'])
 
 def text(value):
     return esc(value)
+
+def update_current_date(source):
+    return re.sub(
+        r'<time class="current-date" datetime="[^"]*">.*?</time>',
+        f'<time class="current-date" datetime="{D["datePublished"]}">{D["dateLabel"]}</time>',
+        source,
+        count=1,
+        flags=re.S,
+    )
+
+def linked_text(value):
+    rendered = esc(value)
+    for link in D.get('inlineLinks', []):
+        label = esc(link['text'])
+        anchor = f'<a href="{esc(link["href"], quote=True)}">{label}</a>'
+        rendered = rendered.replace(label, anchor, 1)
+    return rendered
 
 def card(kind='archive-card', heading='h3', lazy=True):
     loading = ' loading="lazy"' if lazy else ' fetchpriority="high"'
@@ -53,11 +77,11 @@ for block in D['blocks']:
                     f'<figcaption>{esc(block["caption"])}</figcaption></figure>')
     else:
         cls=' class="article-pullquote"' if kind=='quote' else ''
-        body.append(f'<p{cls}>{text(block["text"])}</p>')
+        body.append(f'<p{cls}>{linked_text(block["text"])}</p>')
 
 org={'@type':['Organization','NewsMediaOrganization'],'@id':SITE+'#organization','name':'Uno Sguardo sull’Uomo','url':SITE,'logo':{'@type':'ImageObject','url':SITE+'assets/testata.webp'}}
 schema={'@context':'https://schema.org','@graph':[org,{'@type':'WebSite','@id':SITE+'#website','url':SITE,'name':'Uno Sguardo sull’Uomo','publisher':{'@id':SITE+'#organization'},'inLanguage':'it-IT'},
- {'@type':'NewsArticle','@id':url+'#article','headline':D['title'],'description':D['description'],'url':url,'mainEntityOfPage':{'@type':'WebPage','@id':url},'datePublished':D['datePublished'],'image':[SITE+D['image']],'inLanguage':'it-IT','articleSection':D['category'],'keywords':', '.join(D['tags']),'author':{'@type':'Organization','name':'Redazione Uno Sguardo sull’Uomo','url':SITE+'chi-siamo.html'},'publisher':{'@id':SITE+'#organization'},'isPartOf':{'@id':SITE+'#website'}},
+ {'@type':'NewsArticle','@id':url+'#article','headline':D['title'],'description':D['description'],'url':url,'mainEntityOfPage':{'@type':'WebPage','@id':url},'datePublished':D['datePublished'],'image':[SITE+social_image],'inLanguage':'it-IT','articleSection':D['category'],'keywords':', '.join(D['tags']),'author':{'@type':'Organization','name':'Redazione Uno Sguardo sull’Uomo','url':SITE+'chi-siamo.html'},'publisher':{'@id':SITE+'#organization'},'isPartOf':{'@id':SITE+'#website'}},
  {'@type':'BreadcrumbList','itemListElement':[{'@type':'ListItem','position':i+1,'name':name,'item':link} for i,(name,link) in enumerate([('Prima pagina',SITE),(D['category'],SITE+D['categoryPath']),(D['title'],url)])]}]}
 nav='<nav class="nav" aria-label="Navigazione principale"><a href="/">Prima pagina</a><a href="indagini.html">Indagini</a><a href="metodo.html">Metodo</a><a href="chi-siamo.html">Chi siamo</a><a href="contatti.html">Contatti</a></nav>'
 out=f'''<!doctype html>
@@ -72,14 +96,14 @@ out=f'''<!doctype html>
   <meta property="og:description" content="{esc(D['description'])}">
   <meta property="og:type" content="article">
   <meta property="og:url" content="{url}">
-  <meta property="og:image" content="{SITE+D['image']}">
+  <meta property="og:image" content="{SITE+social_image}">
   <meta property="og:image:alt" content="{esc(D['imageAlt'])}">
-  <meta property="og:image:width" content="{D['imageWidth']}">
-  <meta property="og:image:height" content="{D['imageHeight']}">
+  <meta property="og:image:width" content="{social_image_width}">
+  <meta property="og:image:height" content="{social_image_height}">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{esc(D['title'])}">
   <meta name="twitter:description" content="{esc(D['description'])}">
-  <meta name="twitter:image" content="{SITE+D['image']}">
+  <meta name="twitter:image" content="{SITE+social_image}">
   <meta property="article:published_time" content="{D['datePublished']}">
   <meta property="article:section" content="{D['category']}">
   <link rel="canonical" href="{url}">
@@ -125,6 +149,7 @@ a=archive.read_text(encoding='utf-8')
 managed=r'<article\b[^>]*>\s*<a\b[^>]*href="'+re.escape(D['slug'])+r'".*?</article>'
 if re.search(managed,a,re.S):a=re.sub(managed,card(),a,count=1,flags=re.S)
 else:a=a.replace('<div class="archive-grid">','<div class="archive-grid">\n'+card(),1)
+a=update_current_date(a)
 archive.write_text(a,encoding='utf-8')
 all_cards=re.findall(r'<article\b[^>]*>.*?</article>',a,re.S)
 latest=sorted(all_cards,key=lambda c:re.search(r'datetime="([\d-]+)"',c)[1],reverse=True)[:3]
@@ -133,6 +158,7 @@ s=indagini.read_text(encoding='utf-8')
 pattern=r'(<section class="archive-section"><div class="archive-section-header"><h2><a class="headline-link" href="'+re.escape(D['categoryPath'])+r'">.*?</h2></div><div class="archive-grid">).*?(</div><a class="category-archive-link")'
 s,n=re.subn(pattern,lambda m:m[1]+''.join(latest)+m[2],s,count=1,flags=re.S)
 assert n==1,'Category section not found'
+s=update_current_date(s)
 indagini.write_text(s,encoding='utf-8')
 
 home=ROOT/'index.html'
@@ -180,6 +206,7 @@ def replace_home_grid(source,label,cards):
 
 s=replace_home_grid(s,'Ultime indagini',rotated[3:6])
 s=replace_home_grid(s,'Altre indagini recenti',rotated[6:9])
+s=update_current_date(s)
 home.write_text(s,encoding='utf-8')
 
 for name in ('sitemap.xml','sitemap-google.xml'):

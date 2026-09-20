@@ -1,6 +1,7 @@
-"""Static publication checks for the car-tax dossier."""
+"""Static publication checks for a dossier generated from editorial JSON."""
 
 import json
+import sys
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -9,7 +10,10 @@ from PIL import Image
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA = json.loads((ROOT / "editorial/bollo-auto-80kw.json").read_text(encoding="utf-8"))
+data_path = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "editorial/bollo-auto-80kw.json"
+if not data_path.is_absolute():
+    data_path = ROOT / data_path
+DATA = json.loads(data_path.read_text(encoding="utf-8"))
 ARTICLE = ROOT / DATA["slug"]
 SITE = "https://unosguardosulluomo.github.io/"
 
@@ -23,7 +27,7 @@ assert len(article.xpath("//h1")) == 1
 assert article.xpath("string(//h1)").strip() == DATA["title"]
 assert article.xpath("string(//link[@rel='canonical']/@href)") == SITE + DATA["slug"]
 assert article.xpath("string(//meta[@name='description']/@content)") == DATA["description"]
-assert article.xpath("string(//meta[@property='og:image']/@content)") == SITE + DATA["image"]
+assert article.xpath("string(//meta[@property='og:image']/@content)") == SITE + DATA.get("socialImage", DATA["image"])
 assert article.xpath("string(//meta[@property='article:published_time']/@content)") == DATA["datePublished"]
 assert article.xpath("string(//meta[@property='article:section']/@content)") == DATA["category"]
 
@@ -35,7 +39,7 @@ assert news_article["articleSection"] == DATA["category"]
 
 ids = article.xpath("//@id")
 assert len(ids) == len(set(ids))
-article_text = " ".join(article.xpath("//article//text()"))
+article_text = article.xpath("string(//article)")
 for block in DATA["blocks"]:
     if "text" in block:
         assert block["text"] in article_text, block["text"][:80]
@@ -55,9 +59,12 @@ for attribute in ("href", "src"):
         target = ROOT / parsed.path
         assert target.exists(), f"Missing local target: {value}"
 
-for image_key in ("image",):
+for image_key in ("image", "socialImage"):
+    if image_key not in DATA:
+        continue
     with Image.open(ROOT / DATA[image_key]) as image:
-        assert image.size == (DATA["imageWidth"], DATA["imageHeight"])
+        prefix = "socialImage" if image_key == "socialImage" else "image"
+        assert image.size == (DATA[prefix + "Width"], DATA[prefix + "Height"])
 for block in DATA["blocks"]:
     if block["kind"] == "figure":
         with Image.open(ROOT / block["image"]) as image:
@@ -71,7 +78,6 @@ for filename in ("index.html", "indagini.html", DATA["categoryPath"]):
     assert cards[0].xpath("string(.//img/@src)") == DATA["image"]
 
 home = document(ROOT / "index.html")
-assert home.xpath("string(//article[contains(@class,'lead-story')][1]/@data-dossier)") == DATA["slug"]
 home_cards = home.xpath(
     "//article["
     "contains(concat(' ',normalize-space(@class),' '),' lead-story ') or "
@@ -85,6 +91,8 @@ home_links = [card.xpath("string(.//a[contains(@class,'headline-link')]/@href)")
 assert all(home_dates), "Every home card must show its publication date"
 assert home_dates == sorted(home_dates, reverse=True), home_dates
 assert len(home_links) == len(set(home_links)), home_links
+if DATA["datePublished"] == max(home_dates):
+    assert home.xpath("string(//article[contains(@class,'lead-story')][1]/@data-dossier)") == DATA["slug"]
 
 for sitemap_name in ("sitemap.xml", "sitemap-google.xml"):
     tree = etree.parse(str(ROOT / sitemap_name))
@@ -103,7 +111,7 @@ print(
             "blocks": len(DATA["blocks"]),
             "sources": len(DATA["sources"]),
             "readingMinutes": DATA["readingMinutes"],
-            "images": 2,
+            "images": 1 + int("socialImage" in DATA),
             "status": "ok",
         },
         ensure_ascii=False,
