@@ -26,10 +26,12 @@
 
 @media (max-width: 760px) {
   .nav {
-    gap: 8px;
+    column-gap: 16px;
+    row-gap: 8px;
     padding: 11px 0 10px;
-    justify-content: space-between;
-    overflow-x: auto;
+    justify-content: center;
+    flex-wrap: wrap;
+    overflow-x: visible;
   }
 
   .nav a {
