@@ -442,7 +442,13 @@ h3 { margin: 0 0 8px; font-size: 1.35rem; }
   }
   .utility-bar span:nth-child(2) { display: none; }
   .masthead { padding: 12px 0; }
-  .nav { justify-content: space-between; gap: 8px; overflow-x: auto; }
+  .nav {
+    justify-content: center;
+    flex-wrap: wrap;
+    column-gap: 16px;
+    row-gap: 8px;
+    overflow-x: visible;
+  }
   .nav a { font-size: .64rem; white-space: nowrap; }
   .lead-grid { grid-template-columns: 1fr; gap: 20px; }
   .lead-story { padding-right: 0; border-right: 0; }
