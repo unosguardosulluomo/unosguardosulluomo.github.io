@@ -10,3 +10,9 @@
 .data-table tbody th { background: #eee7dc; color: #282117; text-transform: none; letter-spacing: normal; min-width: 120px; }
 .data-table td { min-width: 125px; vertical-align: top; }
 .data-table-wrap:focus-visible { outline: 3px solid #8b2a21; outline-offset: 3px; }
+.article-testimony { margin: 24px 0; padding: 18px 20px; border-left: 4px solid #8b2a21; background: #f5f0e8; font-style: italic; }
+.article-testimony p { margin: 0 0 1em; }
+.article-testimony p:last-child { margin-bottom: 0; }
+.testimony-label { margin-bottom: 8px; font-family: Arial, sans-serif; font-weight: 700; }
+.article-list { margin: 0 0 1.3em; padding-left: 1.4em; }
+.article-list li { margin: .45em 0; }
