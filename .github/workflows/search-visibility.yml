@@ -1,0 +1,39 @@
+name: Controllo visibilita motori di ricerca
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install beautifulsoup4==4.14.3
+      - name: Rigenera gli artefatti SEO e verifica che siano aggiornati
+        run: |
+          python scripts/build_search_visibility.py
+          git diff --exit-code
+      - name: Verifica metadati, Schema.org, link, sitemap e feed
+        run: python scripts/check_search_visibility.py
+
+  notify-indexnow:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Attende la pubblicazione e notifica i motori IndexNow
+        run: python scripts/submit_indexnow.py
