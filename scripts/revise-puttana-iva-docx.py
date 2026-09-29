@@ -209,7 +209,7 @@ def main():
     section.right_margin = Mm(20)
 
     core = document.core_properties
-    core.title = "PUTTANA IVA"
+    core.title = "1973: come l’IVA cambiò la vita degli italiani"
     core.subject = "Storia dell’IVA, trasformazione dei prezzi e vulnerabilità informativa dei consumatori"
     core.author = "UNO SGUARDO SULL’UOMO"
     core.keywords = "IVA, IGE, prezzi, inflazione, consumatori, euro, 1973, economia"
@@ -217,7 +217,7 @@ def main():
 
     p = document.add_paragraph(style="Title")
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p.add_run("PUTTANA IVA!")
+    p.add_run("1973: come l’IVA cambiò la vita degli italiani")
     p = document.add_paragraph(style="Subtitle")
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p.add_run("Dal 1940 al 2026: come una riforma necessaria cambiò il modo di leggere i prezzi")

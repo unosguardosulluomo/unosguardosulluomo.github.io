@@ -34,6 +34,8 @@ assert page.count('<table class="data-table">') == 2
 assert page.count('<h2 id="sezione-') == 15
 assert page.count('<details class="dossier-contents">') == 1
 assert D["image"] in page and D["inlineImage"] in page and D["socialImage"] in page
+assert D["title"] in page
+assert "PUTTANA IVA!" not in page
 
 for rejected in (
     "Agnelli", "Lamborghini", "Rovagnati", "Il vestito non serve",
@@ -107,4 +109,4 @@ articles_xml = (ROOT / "sitemap-articles.xml").read_text(encoding="utf-8")
 assert f"<loc>{url}</loc><lastmod>{D['datePublished']}</lastmod>" in articles_xml
 assert "Sitemap:" in (ROOT / "robots.txt").read_text(encoding="utf-8")
 
-print("Puttana IVA dossier checks passed")
+print("IVA 1973 dossier checks passed")

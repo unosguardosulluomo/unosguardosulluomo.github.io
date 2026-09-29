@@ -63,7 +63,7 @@ async function inspect(browser, name, viewport, url, screenshot) {
     results.push(await inspect(browser, "home-mobile", { width: 390, height: 844 }, "/", "home-mobile-full.png"));
     results.push(await inspect(browser, "indagini-mobile", { width: 390, height: 844 }, "/indagini.html"));
     results.push(await inspect(browser, "archive-mobile", { width: 390, height: 844 }, "/archivio-economia.html"));
-    if (results[0].h1 !== "PUTTANA IVA!" || results[1].h1 !== "PUTTANA IVA!") throw new Error("Unexpected article heading");
+    if (results[0].h1 !== "1973: come l’IVA cambiò la vita degli italiani" || results[1].h1 !== "1973: come l’IVA cambiò la vita degli italiani") throw new Error("Unexpected article heading");
     console.log(JSON.stringify(results, null, 2));
   } finally {
     await browser.close();

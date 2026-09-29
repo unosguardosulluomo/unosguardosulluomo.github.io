@@ -163,7 +163,7 @@ page = f'''<!doctype html>
   <meta name="twitter:description" content="{esc(D['description'])}"><meta name="twitter:image" content="{SITE+D['socialImage']}">
   <meta property="article:published_time" content="{D['datePublished']}"><meta property="article:modified_time" content="{D['dateModified']}">
   <meta property="article:section" content="{esc(D['macroCategory'])}"><meta property="article:tag" content="{esc(D['microCategory'])}">
-  <link rel="canonical" href="{URL}"><title>IVA 1973, prezzi e consumatori — Uno Sguardo sull'Uomo</title>
+  <link rel="canonical" href="{URL}"><title>{esc(D['title'])} — Uno Sguardo sull'Uomo</title>
   <link rel="stylesheet" href="styles.css?v=20260924-mobile-1"><link rel="stylesheet" href="editorial-rules.css?v=20260812-1"><link rel="stylesheet" href="dossier-tables.css?v=20260925-1">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg"><script type="application/ld+json" data-seo-schema>{json.dumps(schema, ensure_ascii=False)}</script>
 </head><body><main class="newspaper">
