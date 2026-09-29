@@ -233,7 +233,7 @@ def main():
     add_picture(
         document,
         Path(options.shop_image),
-        "Una famiglia davanti ai nuovi prezzi in una drogheria. Illustrazione editoriale generata con intelligenza artificiale; non documenta una scena reale.",
+        "Immagine prodotta da Uno Sguardo sull’Uomo.",
     )
     standfirst = (
         "Nel 1973 l’Imposta sul valore aggiunto (IVA) entrò in una società con una scolarizzazione molto più bassa, "
@@ -295,7 +295,7 @@ def main():
     add_picture(
         document,
         Path(options.bar_image),
-        "Il nuovo prezzo del caffè entra nella conversazione quotidiana. Illustrazione editoriale generata con intelligenza artificiale; non documenta un bar o un listino reale.",
+        "Immagine prodotta da Uno Sguardo sull’Uomo.",
     )
 
     add_body(document, "Nella finestra ottobre 1972-gennaio 1973 i listini all’ingrosso di diversi alimentari si muovono mentre gli operatori preparano il passaggio dall’IGE all’IVA. La coincidenza temporale documenta il riprezzamento, ma non consente di attribuire automaticamente alla nuova imposta ogni aumento osservato.")
