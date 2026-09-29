@@ -65,7 +65,7 @@ for expanded in (
 ):
     assert expanded in plain, expanded
 
-for filename in ("index.html", "indagini.html", "archivio-economia.html", "sitemap.xml", "sitemap-google.xml"):
+for filename in ("index.html", "indagini.html", "archivio-economia.html", "sitemap-articles.xml", "sitemap-news.xml", "feed.xml"):
     content = (ROOT / filename).read_text(encoding="utf-8")
     assert D["slug"] in content, f"Missing placement in {filename}"
     assert content.count(D["slug"]) >= 1
@@ -99,10 +99,10 @@ assert article["dateModified"] == D["dateModified"]
 assert article["articleSection"] == D["macroCategory"]
 assert article["image"] == ["https://unosguardosulluomo.github.io/" + D["socialImage"]]
 
-for sitemap in ("sitemap.xml", "sitemap-google.xml"):
+for sitemap in ("sitemap.xml", "sitemap-google.xml", "sitemap-index.xml", "sitemap-pages.xml", "sitemap-articles.xml", "sitemap-news.xml"):
     tree = ET.parse(ROOT / sitemap)
-    xml = Path(ROOT / sitemap).read_text(encoding="utf-8")
-    assert f"<loc>{url}</loc><lastmod>{D['datePublished']}</lastmod>" in xml
+articles_xml = (ROOT / "sitemap-articles.xml").read_text(encoding="utf-8")
+assert f"<loc>{url}</loc><lastmod>{D['datePublished']}</lastmod>" in articles_xml
 assert "Sitemap:" in (ROOT / "robots.txt").read_text(encoding="utf-8")
 
 print("Puttana IVA dossier checks passed")

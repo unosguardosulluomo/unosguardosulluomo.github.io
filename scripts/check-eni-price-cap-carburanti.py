@@ -55,7 +55,7 @@ for expanded in (
 ):
     assert expanded in plain, expanded
 
-for filename in ("index.html", "indagini.html", "archivio-economia.html", "sitemap.xml", "sitemap-google.xml"):
+for filename in ("index.html", "indagini.html", "archivio-economia.html", "sitemap-articles.xml", "feed.xml"):
     assert D["slug"] in (ROOT / filename).read_text(encoding="utf-8"), f"Missing placement in {filename}"
 
 home = (ROOT / "index.html").read_text(encoding="utf-8")
@@ -81,7 +81,8 @@ article = next(item for item in schema["@graph"] if item.get("@type") == "NewsAr
 assert article["datePublished"] == D["datePublished"]
 assert article["dateModified"] == D["dateModified"]
 assert article["articleSection"] == D["macroCategory"]
-assert [item["name"] for item in article["about"]] == [D["macroCategory"], D["microCategory"]]
+assert [item["name"] for item in article["about"]] == D["tags"]
+assert article["keywords"] == D["tags"]
 assert article["image"] == ["https://unosguardosulluomo.github.io/" + D["socialImage"]]
 
 for sitemap in ("sitemap.xml", "sitemap-google.xml"):
