@@ -25,4 +25,6 @@ Prima di qualsiasi intervento leggere questo file e verificare lo stato corrente
 - Evitare copie indipendenti dello stesso dato e override JavaScript che riscrivano contenuti editoriali dopo il caricamento.
 - Verificare sempre JavaScript e CSS globali, link locali, canonical, Open Graph, Schema.org, sitemap e resa mobile.
 - Nelle sezioni delle fonti citare ente o autore, titolo del documento o dell'articolo e data quando disponibile, senza mostrare URL e senza creare collegamenti esterni cliccabili. Conservare gli indirizzi usati per la verifica nel materiale di lavoro, non nella pagina pubblicata.
+- Nelle didascalie delle immagini prodotte dalla testata usare soltanto la formula "Immagine prodotta da Uno Sguardo sull'Uomo", senza indicazioni sulla tecnica di produzione e senza precisazioni sulla natura reale o ricostruita della scena.
+- Prima della pubblicazione sul sito o dell'inserimento in un dossier, applicare alle immagini prodotte dalla testata una filigrana visibile con la dicitura "UNO SGUARDO SULL'UOMO". Non applicare la filigrana della testata a fotografie o immagini provenienti da Wikipedia, Wikimedia Commons o altre fonti esterne: per queste conservare attribuzione, licenza e indicazioni richieste dalla fonte.
 - Distinguere chiaramente tra modifica preparata, modifica presente nel repository e comportamento verificato sul sito pubblico.

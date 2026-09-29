@@ -27,7 +27,9 @@ assert f'<meta property="article:modified_time" content="{D["dateModified"]}">' 
 assert f'data-macro-category="{D["macroCategory"]}"' in page
 assert f'data-micro-category="{D["microCategory"]}"' in page
 assert page.count('<figure class="') == 2
-assert page.count("Illustrazione editoriale generata con intelligenza artificiale") == 2
+assert page.count("Immagine prodotta da Uno Sguardo sull’Uomo.") == 2
+assert "intelligenza artificiale" not in page
+assert "non documenta" not in page
 assert page.count('<table class="data-table">') == 2
 assert page.count('<h2 id="sezione-') == 15
 assert page.count('<details class="dossier-contents">') == 1
