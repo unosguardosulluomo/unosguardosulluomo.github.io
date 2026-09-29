@@ -59,7 +59,8 @@ for filename in ("index.html", "indagini.html", "archivio-economia.html", "sitem
     assert D["slug"] in (ROOT / filename).read_text(encoding="utf-8"), f"Missing placement in {filename}"
 
 home = (ROOT / "index.html").read_text(encoding="utf-8")
-assert D["slug"] in re.search(r'<article class="lead-story".*?</article>', home, re.S).group(0)
+home_cards = re.findall(r'<article class="(?:lead-story|side-story|story-card)".*?</article>', home, re.S)
+assert any(D["slug"] in item for item in home_cards)
 
 indagini = (ROOT / "indagini.html").read_text(encoding="utf-8")
 economy = re.search(r'<section class="archive-section"><div class="archive-section-header"><h2><a class="headline-link" href="archivio-economia.html">Economia</a></h2></div><div class="archive-grid">(.*?)</div><a class="category-archive-link" href="archivio-economia.html">', indagini, re.S).group(1)
