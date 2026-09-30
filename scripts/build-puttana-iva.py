@@ -182,6 +182,18 @@ page = f'''<!doctype html>
 </main><script src="seo.js?v=20260903-google-1"></script><script src="date.js?v=20260826-audit-1"></script></body></html>'''
 (ROOT / D["slug"]).write_text(page, encoding="utf-8")
 
+for legacy_slug in D.get("legacySlugs", []):
+    redirect = f'''<!doctype html>
+<html lang="it" data-legacy-redirect><head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, follow">
+  <meta http-equiv="refresh" content="0; url={D['slug']}">
+  <link rel="canonical" href="{URL}">
+  <title>{esc(D['title'])} — Uno Sguardo sull'Uomo</title>
+</head><body><p>Il dossier è disponibile al <a href="{D['slug']}">nuovo indirizzo</a>.</p>
+<script>location.replace({json.dumps(D['slug'])} + location.search + location.hash);</script></body></html>'''
+    (ROOT / legacy_slug).write_text(redirect, encoding="utf-8")
+
 
 def dated_cards(markup):
     cards = re.findall(r'<article class="archive-card".*?</article>', markup, re.S)
@@ -200,7 +212,8 @@ def change_card(markup, kind, heading):
 
 archive_path = ROOT / D["categoryPath"]
 archive = archive_path.read_text(encoding="utf-8")
-archive = re.sub(r'<article class="archive-card" data-dossier="' + re.escape(D["slug"]) + r'".*?</article>', "", archive, flags=re.S)
+for slug in [D["slug"], *D.get("legacySlugs", [])]:
+    archive = re.sub(r'<article class="archive-card" data-dossier="' + re.escape(slug) + r'".*?</article>', "", archive, flags=re.S)
 archive = re.sub(r'(<div class="archive-grid">)\s*', r'\1\n', archive, count=1)
 archive = archive.replace('<div class="archive-grid">\n', '<div class="archive-grid">\n' + card() + '\n', 1)
 archive = re.sub(r'<time class="current-date" datetime="[^"]+">.*?</time>', f'<time class="current-date" datetime="{D["datePublished"]}">{D["dateLabel"]}</time>', archive, count=1)

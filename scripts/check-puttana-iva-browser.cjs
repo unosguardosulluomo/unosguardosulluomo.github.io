@@ -34,6 +34,7 @@ async function inspect(browser, name, viewport, url, screenshot) {
     .filter(image => !/^https?:\/\//.test(image.getAttribute("src") || ""))
     .every(image => image.complete && image.naturalWidth > 0), null, { timeout: 15000 });
   const result = await page.evaluate(() => ({
+    url: location.href,
     clientWidth: document.documentElement.clientWidth,
     scrollWidth: document.documentElement.scrollWidth,
     title: document.title,
@@ -56,14 +57,16 @@ async function inspect(browser, name, viewport, url, screenshot) {
 (async () => {
   const browser = await chromium.launch({ headless: true, executablePath });
   try {
-    const article = "/article-puttana-iva.html";
+    const article = "/article-1973-come-iva-cambio-vita-italiani.html";
     const results = [];
     results.push(await inspect(browser, "article-desktop", { width: 1440, height: 900 }, article, "article-desktop-full.png"));
     results.push(await inspect(browser, "article-mobile", { width: 390, height: 844 }, article, "article-mobile-full.png"));
     results.push(await inspect(browser, "home-mobile", { width: 390, height: 844 }, "/", "home-mobile-full.png"));
     results.push(await inspect(browser, "indagini-mobile", { width: 390, height: 844 }, "/indagini.html"));
     results.push(await inspect(browser, "archive-mobile", { width: 390, height: 844 }, "/archivio-economia.html"));
+    results.push(await inspect(browser, "legacy-redirect", { width: 390, height: 844 }, "/article-puttana-iva.html"));
     if (results[0].h1 !== "1973: come l’IVA cambiò la vita degli italiani" || results[1].h1 !== "1973: come l’IVA cambiò la vita degli italiani") throw new Error("Unexpected article heading");
+    if (!results[5].url.endsWith(article)) throw new Error(`Legacy URL did not redirect: ${results[5].url}`);
     console.log(JSON.stringify(results, null, 2));
   } finally {
     await browser.close();

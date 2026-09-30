@@ -26,7 +26,12 @@ def canonical_for(path: Path) -> str:
     return SITE if path.name == "index.html" else SITE + path.name
 
 
-articles = sorted(ROOT.glob("article-*.html"))
+def is_legacy_redirect(path: Path) -> bool:
+    return "data-legacy-redirect" in path.read_text(encoding="utf-8")[:1000]
+
+
+articles = sorted(path for path in ROOT.glob("article-*.html") if not is_legacy_redirect(path))
+redirects = sorted(path for path in ROOT.glob("article-*.html") if is_legacy_redirect(path))
 pages = [
     ROOT / name for name in [
         "index.html", "indagini.html", "archivio-politica-italiana.html",
@@ -94,6 +99,15 @@ for path in pages + articles:
             fail(f"{label}: link categoria non statico")
 
 local_files = {path.name for path in ROOT.glob("*.html")} | {path.name for path in ROOT.glob("*.xml")}
+
+for path in redirects:
+    soup = BeautifulSoup(path.read_text(encoding="utf-8"), "html.parser")
+    target = soup.find("meta", attrs={"http-equiv": re.compile(r"^refresh$", re.I)})
+    canonical = soup.find("link", rel="canonical")
+    if not target or "url=article-" not in target.get("content", ""):
+        fail(f"{path.name}: reindirizzamento legacy mancante")
+    if not canonical or canonical.get("href", "").replace(SITE, "") not in {item.name for item in articles}:
+        fail(f"{path.name}: canonical legacy non valido")
 for path in pages + articles:
     soup = BeautifulSoup(path.read_text(encoding="utf-8"), "html.parser")
     for link in soup.find_all("a", href=True):

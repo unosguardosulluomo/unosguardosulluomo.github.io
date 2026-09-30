@@ -62,15 +62,27 @@ def canonical_for(path: Path) -> str:
     return SITE if path.name == "index.html" else SITE + path.name
 
 
+def is_legacy_redirect(path: Path) -> bool:
+    return "data-legacy-redirect" in path.read_text(encoding="utf-8")[:1000]
+
+
 def first_git_date(path: Path) -> str:
-    result = subprocess.run(
-        ["git", "log", "--diff-filter=A", "--follow", "--format=%cs", "--", path.name],
-        cwd=ROOT, capture_output=True, text=True, check=False,
-    )
-    dates = [line.strip() for line in result.stdout.splitlines() if line.strip()]
+    candidates = [path.name]
+    for metadata_path in (ROOT / "editorial").glob("*.json"):
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        if metadata.get("slug") == path.name:
+            candidates.extend(metadata.get("legacySlugs", []))
+            break
+    dates: list[str] = []
+    for candidate in candidates:
+        result = subprocess.run(
+            ["git", "log", "--diff-filter=A", "--follow", "--format=%cs", "--", candidate],
+            cwd=ROOT, capture_output=True, text=True, check=False,
+        )
+        dates.extend(line.strip() for line in result.stdout.splitlines() if line.strip())
     if not dates:
         raise RuntimeError(f"Data di primo inserimento Git non trovata: {path.name}")
-    return dates[-1]
+    return min(dates)
 
 
 def latest_git_date(path: Path) -> str:
@@ -414,7 +426,7 @@ def write_feed(article_data: dict[str, dict]) -> None:
 
 
 def main() -> None:
-    articles = sorted(ROOT.glob("article-*.html"))
+    articles = sorted(path for path in ROOT.glob("article-*.html") if not is_legacy_redirect(path))
     public_pages = [
         ROOT / name for name in [
             "index.html", "indagini.html", "archivio-politica-italiana.html",

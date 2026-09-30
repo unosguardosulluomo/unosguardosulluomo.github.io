@@ -19,7 +19,7 @@ def normalize(value):
 
 
 url = "https://unosguardosulluomo.github.io/" + D["slug"]
-assert D["slug"] == "article-puttana-iva.html"
+assert D["slug"] == "article-1973-come-iva-cambio-vita-italiani.html"
 assert f'<link rel="canonical" href="{url}">' in page
 assert f'<meta property="og:url" content="{url}">' in page
 assert f'<meta property="article:published_time" content="{D["datePublished"]}">' in page
@@ -36,6 +36,12 @@ assert page.count('<details class="dossier-contents">') == 1
 assert D["image"] in page and D["inlineImage"] in page and D["socialImage"] in page
 assert D["title"] in page
 assert "PUTTANA IVA!" not in page
+
+for legacy_slug in D["legacySlugs"]:
+    legacy = (ROOT / legacy_slug).read_text(encoding="utf-8")
+    assert 'name="robots" content="noindex, follow"' in legacy
+    assert f'http-equiv="refresh" content="0; url={D["slug"]}"' in legacy
+    assert f'<link rel="canonical" href="{url}">' in legacy
 
 for rejected in (
     "Agnelli", "Lamborghini", "Rovagnati", "Il vestito non serve",
@@ -106,7 +112,7 @@ assert article["image"] == ["https://unosguardosulluomo.github.io/" + D["socialI
 for sitemap in ("sitemap.xml", "sitemap-google.xml", "sitemap-index.xml", "sitemap-pages.xml", "sitemap-articles.xml", "sitemap-news.xml"):
     tree = ET.parse(ROOT / sitemap)
 articles_xml = (ROOT / "sitemap-articles.xml").read_text(encoding="utf-8")
-assert f"<loc>{url}</loc><lastmod>{D['datePublished']}</lastmod>" in articles_xml
+assert f"<loc>{url}</loc><lastmod>{D['dateModified']}</lastmod>" in articles_xml
 assert "Sitemap:" in (ROOT / "robots.txt").read_text(encoding="utf-8")
 
 print("IVA 1973 dossier checks passed")
