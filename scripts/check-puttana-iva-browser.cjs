@@ -57,16 +57,19 @@ async function inspect(browser, name, viewport, url, screenshot) {
 (async () => {
   const browser = await chromium.launch({ headless: true, executablePath });
   try {
-    const article = "/article-1973-come-iva-cambio-vita-italiani.html";
+    const article = "/article-economia-fisco-societa-1973-iva-vita-italiani.html";
     const results = [];
     results.push(await inspect(browser, "article-desktop", { width: 1440, height: 900 }, article, "article-desktop-full.png"));
     results.push(await inspect(browser, "article-mobile", { width: 390, height: 844 }, article, "article-mobile-full.png"));
     results.push(await inspect(browser, "home-mobile", { width: 390, height: 844 }, "/", "home-mobile-full.png"));
     results.push(await inspect(browser, "indagini-mobile", { width: 390, height: 844 }, "/indagini.html"));
     results.push(await inspect(browser, "archive-mobile", { width: 390, height: 844 }, "/archivio-economia.html"));
-    results.push(await inspect(browser, "legacy-redirect", { width: 390, height: 844 }, "/article-puttana-iva.html"));
     if (results[0].h1 !== "1973: come l’IVA cambiò la vita degli italiani" || results[1].h1 !== "1973: come l’IVA cambiò la vita degli italiani") throw new Error("Unexpected article heading");
-    if (!results[5].url.endsWith(article)) throw new Error(`Legacy URL did not redirect: ${results[5].url}`);
+    for (const legacy of ["/article-puttana-iva.html", "/article-1973-come-iva-cambio-vita-italiani.html"]) {
+      const redirected = await inspect(browser, "legacy-redirect", { width: 390, height: 844 }, legacy);
+      if (!redirected.url.endsWith(article)) throw new Error(`Legacy URL did not redirect: ${redirected.url}`);
+      results.push(redirected);
+    }
     console.log(JSON.stringify(results, null, 2));
   } finally {
     await browser.close();

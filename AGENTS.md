@@ -17,6 +17,7 @@ Prima di qualsiasi intervento leggere questo file e verificare lo stato corrente
 
 - Non abbreviare, riscrivere o rimuovere contenuti e fonti durante interventi tecnici.
 - Trattare data di pubblicazione, categoria, titolo, immagine, descrizione, argomenti e URL come metadati strutturali.
+- Per i nuovi dossier e per quelli il cui indirizzo viene modificato, costruire lo slug SEO includendo nell'ordine macroarea, microarea e parole chiave essenziali del titolo: `article-<macroarea>-<microarea>-<titolo>.html`. Conservare gli indirizzi precedenti soltanto come reindirizzamenti `noindex` verso il nuovo canonical.
 - La data di pubblicazione coincide con il primo inserimento Git del dossier e non cambia in seguito.
 - Conservare separatamente la data di pubblicazione e l'eventuale data di aggiornamento; una correzione successiva non sostituisce mai la data originale.
 - Ordinare archivi e sezioni cronologiche dalla pubblicazione più recente alla più vecchia.
