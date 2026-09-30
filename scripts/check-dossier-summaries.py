@@ -6,7 +6,10 @@ from lxml import html
 
 
 ROOT = Path(__file__).resolve().parents[1]
-articles = sorted(ROOT.glob("article-*.html"))
+articles = sorted(
+    path for path in ROOT.glob("article-*.html")
+    if "data-legacy-redirect" not in path.read_text(encoding="utf-8")[:1000]
+)
 assert articles, "No dossier pages found"
 
 total_links = 0
