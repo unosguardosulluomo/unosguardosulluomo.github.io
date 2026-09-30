@@ -19,7 +19,7 @@ def normalize(value):
 
 
 url = "https://unosguardosulluomo.github.io/" + D["slug"]
-assert D["slug"] == "article-1973-come-iva-cambio-vita-italiani.html"
+assert D["slug"] == "article-economia-fisco-societa-1973-iva-vita-italiani.html"
 assert f'<link rel="canonical" href="{url}">' in page
 assert f'<meta property="og:url" content="{url}">' in page
 assert f'<meta property="article:published_time" content="{D["datePublished"]}">' in page
