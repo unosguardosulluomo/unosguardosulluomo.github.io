@@ -1,5 +1,8 @@
 {
-  "slug": "article-medici-sotto-torchio.html",
+  "slug": "article-politica-italiana-societa-immigrazione-cpr-medici-ravenna.html",
+  "legacySlugs": [
+    "article-medici-sotto-torchio.html"
+  ],
   "sourceDocx": "dossier-medici-sotto-torchio.docx",
   "title": "MEDICI SOTTO TORCHIO",
   "deck": "Ravenna, i certificati per i rimpatri e l’accusa ai medici che avrebbero usato una funzione dello Stato per impedirne l’applicazione delle regole",
@@ -11,6 +14,7 @@
   "author": "Indagine della redazione",
   "readingMinutes": 24,
   "tags": [
+    "Società",
     "Centri di permanenza per il rimpatrio",
     "Immigrazione",
     "Rimpatri",
@@ -20,7 +24,7 @@
     "Legalità",
     "Ideologia"
   ],
-  "cardEyebrow": "Politica italiana • CPR • Legalità",
+  "cardEyebrow": "Politica italiana • Società • CPR",
   "image": "assets/medici-sotto-torchio.webp",
   "imageWidth": 1672,
   "imageHeight": 941,

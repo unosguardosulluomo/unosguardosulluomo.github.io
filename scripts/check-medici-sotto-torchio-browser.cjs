@@ -49,8 +49,8 @@ async function inspect(browser, name, viewport, url, screenshot) {
   const browser = await chromium.launch({ headless: true, executablePath });
   try {
     const results = [];
-    results.push(await inspect(browser, "article-desktop", { width: 1440, height: 900 }, "/article-medici-sotto-torchio.html", "article-desktop-full.png"));
-    results.push(await inspect(browser, "article-mobile", { width: 390, height: 844 }, "/article-medici-sotto-torchio.html", "article-mobile-full.png"));
+    results.push(await inspect(browser, "article-desktop", { width: 1440, height: 900 }, "/article-politica-italiana-societa-immigrazione-cpr-medici-ravenna.html", "article-desktop-full.png"));
+    results.push(await inspect(browser, "article-mobile", { width: 390, height: 844 }, "/article-politica-italiana-societa-immigrazione-cpr-medici-ravenna.html", "article-mobile-full.png"));
     results.push(await inspect(browser, "home-mobile", { width: 390, height: 844 }, "/", "home-mobile-full.png"));
     results.push(await inspect(browser, "indagini-mobile", { width: 390, height: 844 }, "/indagini.html"));
     results.push(await inspect(browser, "archive-mobile", { width: 390, height: 844 }, "/archivio-politica-italiana.html"));

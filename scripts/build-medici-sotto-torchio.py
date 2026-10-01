@@ -229,7 +229,8 @@ def change_card(markup, kind, heading):
 
 archive_path = ROOT / D["categoryPath"]
 archive = archive_path.read_text(encoding="utf-8")
-archive = re.sub(r'<article class="archive-card" data-dossier="' + re.escape(D["slug"]) + r'".*?</article>', "", archive, flags=re.S)
+for managed_slug in [D["slug"], *D.get("legacySlugs", [])]:
+    archive = re.sub(r'<article class="archive-card" data-dossier="' + re.escape(managed_slug) + r'".*?</article>', "", archive, flags=re.S)
 archive = re.sub(r'(<div class="archive-grid">)\s*', r'\1\n', archive, count=1)
 archive = archive.replace('<div class="archive-grid">\n', '<div class="archive-grid">\n' + card() + '\n', 1)
 archive = re.sub(r'<time class="current-date" datetime="[^"]+">.*?</time>', f'<time class="current-date" datetime="{D["datePublished"]}">{D["dateLabel"]}</time>', archive, count=1)
