@@ -30,7 +30,6 @@ WEB_ID = SITE + "#website"
 LOGO = SITE + "assets/testata.webp"
 FEED = SITE + "feed.xml"
 MACRO_TOPIC = "Geopolitica"
-HUB_PATH = "geopolitica.html"
 
 CATEGORY_PATHS = {
     "Politica italiana": "archivio-politica-italiana.html",
@@ -51,7 +50,6 @@ CATEGORY_TOPICS = {
     "archivio-politica-italiana.html": ["Geopolitica", "Politica italiana", "Governo", "Parlamento", "Partiti", "Istituzioni"],
     "archivio-economia.html": ["Geopolitica", "Economia", "Lavoro", "Energia", "Industria", "Imprese", "Finanza pubblica"],
     "archivio-societa.html": ["Geopolitica", "Società", "Sanità", "Diritti", "Sicurezza", "Tecnologia", "Giovani"],
-    "geopolitica.html": ["Geopolitica", "Politica italiana", "Politica internazionale", "Economia", "Società"],
 }
 
 MONTHS = {
@@ -164,73 +162,14 @@ def replace_or_insert_head(source: str, pattern: str, replacement: str) -> str:
     return source.replace("</head>", replacement + "\n</head>", 1)
 
 
-def ensure_geopolitica_nav(source: str) -> str:
-    """Expose the macro topic through the same crawlable navigation on every page."""
-    def update(match: re.Match[str]) -> str:
-        block = match.group(0)
-        if f'href="{HUB_PATH}"' in block:
-            return block
-        return re.sub(
-            r'(<a\b[^>]*href="indagini\.html"[^>]*>.*?</a>)',
-            rf'\1<a href="{HUB_PATH}">Geopolitica</a>',
-            block,
-            count=1,
-            flags=re.I | re.S,
-        )
-
+def remove_geopolitica_nav(source: str) -> str:
+    """Keep the macro topic in metadata without adding a redundant menu page."""
     return re.sub(
-        r'<nav\b[^>]*class="[^"]*\bnav\b[^"]*"[^>]*>.*?</nav>',
-        update,
+        r'<a\b[^>]*href="geopolitica\.html"[^>]*>.*?</a>',
+        "",
         source,
-        count=1,
         flags=re.I | re.S,
     )
-
-
-def render_geopolitica_hub(article_data: dict[str, dict]) -> None:
-    """Materialise the hub from article metadata so no editorial data is copied."""
-    path = ROOT / HUB_PATH
-    source = path.read_text(encoding="utf-8")
-    sections: list[str] = []
-    for category, category_path in CATEGORY_PATHS.items():
-        entries = sorted(
-            (item for item in article_data.values() if item["category"] == category),
-            key=lambda item: (item["published"], item["url"]),
-            reverse=True,
-        )[:3]
-        cards: list[str] = []
-        for item in entries:
-            published = datetime.strptime(item["published"], "%Y-%m-%d")
-            date_label = f"{published.day} {MONTHS[published.month]} {published.year}"
-            relative_url = item["url"].removeprefix(SITE)
-            cards.append(
-                '<article class="geopolitica-card">'
-                f'<p class="archive-meta"><time datetime="{item["published"]}">{date_label}</time></p>'
-                f'<h3><a class="headline-link" href="{html.escape(relative_url, quote=True)}">{html.escape(item["title"])}</a></h3>'
-                f'<p>{html.escape(item["description"])}</p>'
-                '</article>'
-            )
-        description = CATEGORY_DESCRIPTIONS[category_path]
-        sections.append(
-            f'<section class="geopolitica-section" aria-labelledby="geo-{category_path.removeprefix("archivio-").removesuffix(".html")}">'
-            '<header class="geopolitica-section-header">'
-            f'<p class="eyebrow">{MACRO_TOPIC} · Microargomento</p>'
-            f'<h2 id="geo-{category_path.removeprefix("archivio-").removesuffix(".html")}"><a class="headline-link" href="{category_path}">{html.escape(category)}</a></h2>'
-            f'<p>{html.escape(description)}</p>'
-            '</header>'
-            f'<div class="geopolitica-list">{"".join(cards)}</div>'
-            f'<a class="geopolitica-all" href="{category_path}">Tutti i dossier di {html.escape(category)} →</a>'
-            '</section>'
-        )
-    collection = '<div class="geopolitica-grid">' + "".join(sections) + '</div>'
-    source = re.sub(
-        r'<!-- GEOPOLITICA-COLLECTION:START -->.*?<!-- GEOPOLITICA-COLLECTION:END -->',
-        '<!-- GEOPOLITICA-COLLECTION:START -->\n' + collection + '\n<!-- GEOPOLITICA-COLLECTION:END -->',
-        source,
-        count=1,
-        flags=re.S,
-    )
-    path.write_text(source, encoding="utf-8", newline="\n")
 
 
 def normalise_article_date(source: str, published: str) -> str:
@@ -300,7 +239,6 @@ def page_schema(path: Path, soup: BeautifulSoup, article_data: dict[str, dict]) 
             node,
             breadcrumbs([
                 ("Prima pagina", SITE),
-                (MACRO_TOPIC, SITE + HUB_PATH),
                 (category, SITE + CATEGORY_PATHS[category]),
                 (title, canonical),
             ]),
@@ -335,7 +273,6 @@ def page_schema(path: Path, soup: BeautifulSoup, article_data: dict[str, dict]) 
         page_types = {
             "chi-siamo.html": "AboutPage", "contatti.html": "ContactPage",
             "metodo.html": "WebPage", "indagini.html": "CollectionPage",
-            "geopolitica.html": "CollectionPage",
         }
         page_type = "CollectionPage" if path.name.startswith("archivio-") else page_types.get(path.name, "WebPage")
         page = {
@@ -361,7 +298,7 @@ def page_schema(path: Path, soup: BeautifulSoup, article_data: dict[str, dict]) 
                 page["about"] = [{"@type": "Thing", "name": topic} for topic in CATEGORY_TOPICS[path.name]]
         graph.append(page)
         if path.name.startswith("archivio-"):
-            breadcrumb_items = [("Prima pagina", SITE), (MACRO_TOPIC, SITE + HUB_PATH), (title, canonical)]
+            breadcrumb_items = [("Prima pagina", SITE), (title, canonical)]
         else:
             breadcrumb_items = [("Prima pagina", SITE), (title, canonical)]
         graph.append(breadcrumbs(breadcrumb_items))
@@ -371,7 +308,7 @@ def page_schema(path: Path, soup: BeautifulSoup, article_data: dict[str, dict]) 
 
 def update_html(path: Path, article_data: dict[str, dict]) -> None:
     source = path.read_text(encoding="utf-8")
-    source = ensure_geopolitica_nav(source)
+    source = remove_geopolitica_nav(source)
     if not path.name.startswith("article-"):
         def update_card(match: re.Match[str]) -> str:
             block = match.group(0)
@@ -430,7 +367,7 @@ def update_html(path: Path, article_data: dict[str, dict]) -> None:
         article_title = html.escape(article_data[path.name]["title"])
         visible_breadcrumb = (
             '<nav class="topic-breadcrumb" aria-label="Percorso tematico">'
-            f'<a href="{HUB_PATH}">{MACRO_TOPIC}</a><span aria-hidden="true">›</span>'
+            f'<span class="topic-breadcrumb-macro">{MACRO_TOPIC}</span><span aria-hidden="true">›</span>'
             f'<a href="{category_path}">{html.escape(category)}</a><span aria-hidden="true">›</span>'
             f'<span aria-current="page">{article_title}</span></nav>'
         )
@@ -550,7 +487,7 @@ def main() -> None:
     articles = sorted(path for path in ROOT.glob("article-*.html") if not is_legacy_redirect(path))
     public_pages = [
         ROOT / name for name in [
-            "index.html", "indagini.html", "geopolitica.html", "archivio-politica-italiana.html",
+            "index.html", "indagini.html", "archivio-politica-italiana.html",
             "archivio-politica-internazionale.html", "archivio-economia.html",
             "archivio-societa.html", "metodo.html", "chi-siamo.html", "contatti.html",
         ]
@@ -558,7 +495,6 @@ def main() -> None:
     article_data: dict[str, dict] = {}
     for path in articles:
         update_html(path, article_data)
-    render_geopolitica_hub(article_data)
     for path in public_pages:
         update_html(path, article_data)
     write_sitemaps(article_data, public_pages + articles)

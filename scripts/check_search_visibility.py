@@ -15,7 +15,6 @@ from bs4 import BeautifulSoup
 ROOT = Path(__file__).resolve().parents[1]
 SITE = "https://unosguardosulluomo.github.io/"
 MACRO_TOPIC = "Geopolitica"
-HUB_PATH = "geopolitica.html"
 ERRORS: list[str] = []
 ARTICLE_DATES: dict[str, str] = {}
 
@@ -36,7 +35,7 @@ articles = sorted(path for path in ROOT.glob("article-*.html") if not is_legacy_
 redirects = sorted(path for path in ROOT.glob("article-*.html") if is_legacy_redirect(path))
 pages = [
     ROOT / name for name in [
-        "index.html", "indagini.html", "geopolitica.html", "archivio-politica-italiana.html",
+        "index.html", "indagini.html", "archivio-politica-italiana.html",
         "archivio-politica-internazionale.html", "archivio-economia.html",
         "archivio-societa.html", "metodo.html", "chi-siamo.html", "contatti.html",
     ]
@@ -72,8 +71,10 @@ for path in pages + articles:
     if soup.find("meta", attrs={"name": re.compile(r"^keywords$", re.I)}):
         fail(f"{label}: meta keywords non ammesso")
     main_nav = soup.select_one("nav.nav")
-    if not main_nav or not main_nav.find("a", href=HUB_PATH):
-        fail(f"{label}: collegamento di navigazione a Geopolitica mancante")
+    if not main_nav:
+        fail(f"{label}: navigazione principale mancante")
+    elif main_nav.find("a", href="geopolitica.html"):
+        fail(f"{label}: collegamento ridondante alla pagina Geopolitica")
     schemas = soup.select("script[data-seo-schema]")
     if len(schemas) != 1:
         fail(f"{label}: atteso un solo schema statico, trovati {len(schemas)}")
@@ -117,26 +118,15 @@ for path in pages + articles:
             fail(f"{label}: tassonomia visibile dell’articolo non coerente")
         visible_breadcrumb = soup.select_one("nav.topic-breadcrumb")
         breadcrumb_links = [link.get("href") for link in visible_breadcrumb.find_all("a")] if visible_breadcrumb else []
-        if breadcrumb_links != [HUB_PATH, category.get("href") if category else ""]:
+        breadcrumb_macro = visible_breadcrumb.select_one(".topic-breadcrumb-macro") if visible_breadcrumb else None
+        if not breadcrumb_macro or breadcrumb_macro.get_text(" ", strip=True) != MACRO_TOPIC:
+            fail(f"{label}: macroargomento visibile nel percorso tematico mancante")
+        if breadcrumb_links != [category.get("href") if category else ""]:
             fail(f"{label}: percorso tematico visibile non coerente")
         breadcrumb_schema = next((node for node in graph if node.get("@type") == "BreadcrumbList"), None)
         breadcrumb_names = [item.get("name") for item in breadcrumb_schema.get("itemListElement", [])] if breadcrumb_schema else []
-        if breadcrumb_names[:3] != ["Prima pagina", MACRO_TOPIC, category_name]:
+        if breadcrumb_names[:2] != ["Prima pagina", category_name]:
             fail(f"{label}: breadcrumb strutturato non coerente")
-
-    if path.name == HUB_PATH:
-        sections = soup.select("section.geopolitica-section")
-        if len(sections) != 4:
-            fail("geopolitica.html: devono essere presenti i quattro microargomenti")
-        if any(len(section.select("article.geopolitica-card")) != 3 for section in sections):
-            fail("geopolitica.html: ogni microargomento deve mostrare tre dossier")
-        expected_categories = {
-            "archivio-politica-italiana.html", "archivio-politica-internazionale.html",
-            "archivio-economia.html", "archivio-societa.html",
-        }
-        shown_categories = {link.get("href") for link in soup.select(".geopolitica-categories a")}
-        if shown_categories != expected_categories:
-            fail("geopolitica.html: navigazione dei microargomenti incompleta")
 
 local_files = {path.name for path in ROOT.glob("*.html")} | {path.name for path in ROOT.glob("*.xml")}
 
