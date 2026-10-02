@@ -352,6 +352,20 @@ h3 { margin: 0 0 8px; font-size: 1.35rem; }
 .article-list article[hidden] { display: none; }
 
 .article-page { margin-top: 28px; }
+.topic-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 9px;
+  max-width: 1040px;
+  margin: 0 auto 20px;
+  color: var(--muted);
+  font: 800 .68rem/1.4 "Arial Narrow", Arial, sans-serif;
+  letter-spacing: .055em;
+  text-transform: uppercase;
+}
+.topic-breadcrumb a { color: var(--accent); text-underline-offset: 3px; }
+.topic-breadcrumb [aria-current="page"] { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .article-page,
 .article-header,
 .article-layout,
@@ -465,6 +479,8 @@ h3 { margin: 0 0 8px; font-size: 1.35rem; }
   .article-layout { display: block; width: 100%; }
   .article-sidebar { position: static; width: 100%; margin-top: 30px; }
   .article-header { width: 100%; text-align: left; }
+  .topic-breadcrumb { margin-bottom: 16px; font-size: .61rem; }
+  .topic-breadcrumb [aria-current="page"] { flex-basis: 100%; white-space: normal; }
   .article-header h1 {
     font-size: clamp(2rem, 10vw, 2.75rem);
     line-height: 1.02;
