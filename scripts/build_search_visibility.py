@@ -20,6 +20,7 @@ from urllib.parse import urljoin
 from xml.sax.saxutils import escape
 
 from bs4 import BeautifulSoup
+from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 SITE = "https://unosguardosulluomo.github.io/"
@@ -114,6 +115,94 @@ def absolute(value: str) -> str:
 
 def clean(value: str) -> str:
     return re.sub(r"\s+", " ", value).strip()
+
+
+def replace_meta_content(source: str, key: str, value: str) -> str:
+    escaped = html.escape(value, quote=True)
+    pattern = (
+        r'(<meta\b(?=[^>]*(?:name|property)="' + re.escape(key) + r'")'
+        r'(?=[^>]*\bcontent=")[^>]*\bcontent=")[^"]*(")'
+    )
+    return re.sub(pattern, lambda match: match.group(1) + escaped + match.group(2), source, flags=re.I)
+
+
+def concise_description(value: str) -> str:
+    value = clean(value)
+    if len(value) <= 165:
+        return value
+    sentence_ends = [match.end() for match in re.finditer(r"[.!?](?:\s|$)", value[:166])]
+    useful = [end for end in sentence_ends if end >= 110]
+    if useful:
+        return value[: useful[-1]].strip()
+    shortened = value[:162].rsplit(" ", 1)[0].rstrip(" ,;:-")
+    return shortened + "…"
+
+
+def normalise_article_metadata(source: str) -> str:
+    soup = BeautifulSoup(source, "html.parser")
+    h1 = soup.find("h1")
+    if not h1:
+        return source
+    title = clean(h1.get_text(" ", strip=True))
+    source = re.sub(
+        r"(<title>).*?(</title>)",
+        lambda match: match.group(1) + html.escape(title) + match.group(2),
+        source,
+        count=1,
+        flags=re.I | re.S,
+    )
+    source = replace_meta_content(source, "og:title", title)
+    source = replace_meta_content(source, "twitter:title", title)
+
+    current = meta(soup, name="description")
+    if not 110 <= len(current) <= 165:
+        candidates = [
+            clean(node.get_text(" ", strip=True))
+            for node in [
+                soup.select_one(".article-deck"),
+                soup.select_one(".article-lead, .standfirst, .article-intro"),
+                *soup.select(".article-body > p")[:3],
+            ]
+            if node
+        ]
+        unique_candidates = list(dict.fromkeys(value for value in candidates if value))
+        selected: list[str] = []
+        for candidate in unique_candidates:
+            selected.append(candidate)
+            if len(" ".join(selected)) >= 120:
+                break
+        combined = " ".join(selected) or current
+        description = concise_description(combined)
+        source = replace_meta_content(source, "description", description)
+        source = replace_meta_content(source, "og:description", description)
+        source = replace_meta_content(source, "twitter:description", description)
+    return source
+
+
+def normalise_local_image_dimensions(source: str) -> str:
+    def update(match: re.Match[str]) -> str:
+        tag = match.group(0)
+        src_match = re.search(r'\bsrc="([^"]+)"', tag, flags=re.I)
+        if not src_match:
+            return tag
+        src = src_match.group(1).split("?", 1)[0]
+        if src.startswith(("http://", "https://", "data:", "/")) or ".." in Path(src).parts:
+            return tag
+        image_path = ROOT / src
+        if not image_path.is_file():
+            return tag
+        with Image.open(image_path) as asset:
+            width, height = asset.size
+        additions = ""
+        if not re.search(r"\bwidth=", tag, flags=re.I):
+            additions += f' width="{width}"'
+        if not re.search(r"\bheight=", tag, flags=re.I):
+            additions += f' height="{height}"'
+        if not additions:
+            return tag
+        return re.sub(r"\s*/?>$", lambda end: additions + end.group(0), tag)
+
+    return re.sub(r"<img\b[^>]*>", update, source, flags=re.I | re.S)
 
 
 def organisation() -> dict:
@@ -309,6 +398,10 @@ def page_schema(path: Path, soup: BeautifulSoup, article_data: dict[str, dict]) 
 def update_html(path: Path, article_data: dict[str, dict]) -> None:
     source = path.read_text(encoding="utf-8")
     source = remove_geopolitica_nav(source)
+    source = re.sub(r"styles\.css\?v=[^\"']+", "styles.css?v=20261009-seo-1", source)
+    source = normalise_local_image_dimensions(source)
+    if path.name.startswith("article-"):
+        source = normalise_article_metadata(source)
     if not path.name.startswith("article-"):
         def update_card(match: re.Match[str]) -> str:
             block = match.group(0)

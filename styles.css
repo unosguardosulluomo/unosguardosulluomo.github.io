@@ -549,3 +549,57 @@ h3 { margin: 0 0 8px; font-size: 1.35rem; }
   width: 28%;
   font-weight: 800;
 }
+.related-dossiers {
+  margin: 2.5rem 0;
+  padding: 1.25rem 0;
+  border-top: 2px solid var(--ink, #161616);
+  border-bottom: 1px solid var(--rule, #b9b2a8);
+}
+
+.related-dossiers h2 {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+}
+
+.related-dossiers ul {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.related-dossiers li {
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+}
+
+.related-dossiers a {
+  color: inherit;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+}
+
+.related-dossiers span {
+  color: var(--muted, #625f59);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 720px) {
+  .related-dossiers ul {
+    grid-template-columns: 1fr;
+  }
+
+  .related-dossiers li + li {
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--rule, #d4cec5);
+  }
+}
