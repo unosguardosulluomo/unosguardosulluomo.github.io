@@ -89,6 +89,28 @@ for path in pages + articles:
         fail(f"{label}: WebSite mancante nel grafo")
 
     if path.name.startswith("article-"):
+        seo_title = re.sub(r"\s+", " ", soup.title.get_text(" ", strip=True)) if soup.title else ""
+        description_node = soup.find("meta", attrs={"name": "description"})
+        description = description_node.get("content", "").strip() if description_node else ""
+        if len(seo_title) > 70:
+            fail(f"{label}: titolo SEO oltre 70 caratteri ({len(seo_title)})")
+        if not 110 <= len(description) <= 165:
+            fail(f"{label}: description fuori dall’intervallo 110-165 ({len(description)})")
+        related = soup.select_one("section.related-dossiers")
+        related_links = related.select('a[href^="article-"]') if related else []
+        related_targets = [link.get("href", "").split("#", 1)[0].split("?", 1)[0] for link in related_links]
+        if len(related_targets) != 3 or len(set(related_targets)) != 3:
+            fail(f"{label}: servono tre dossier correlati distinti")
+        if label in related_targets:
+            fail(f"{label}: il blocco correlati contiene un collegamento a sé stesso")
+        if any(len(re.sub(r"\s+", " ", link.get_text(" ", strip=True))) < 10 for link in related_links):
+            fail(f"{label}: testo dei collegamenti correlati non descrittivo")
+        for image in soup.find_all("img", src=True):
+            src = image.get("src", "").split("?", 1)[0]
+            if src.startswith(("http://", "https://", "data:", "/")):
+                continue
+            if (ROOT / src).is_file() and (not image.get("width") or not image.get("height")):
+                fail(f"{label}: dimensioni mancanti per l’immagine locale {src}")
         news = next((node for node in graph if node.get("@type") == "NewsArticle"), None)
         if not news:
             fail(f"{label}: NewsArticle mancante")
