@@ -1,0 +1,52 @@
+{
+  "slug": "article-geopolitica-societa-poverta-contagiosa.html",
+  "sourceDocx": "dossier-sindacato-vampiro.docx",
+  "title": "LA POVERTÀ CONTAGIOSA",
+  "seoTitle": "Povertà degli anziani: il costo nascosto per le famiglie",
+  "deck": "Quando la povertà di uno finisce per impoverire anche chi gli sta più vicino",
+  "lead": "In Italia più di 5,7 milioni di persone vivono in povertà assoluta. Sono oltre 2,2 milioni di famiglie. Non sono cifre con cui confezionare una notizia di passaggio: sono persone che, secondo la misurazione dell’Istituto nazionale di statistica (ISTAT) riferita al 2024, non dispongono di quanto serve per sostenere una spesa essenziale adeguata alle proprie condizioni. Chi non riesce ad acquistare ciò di cui ha bisogno non può rimandare per sempre: rinuncia, si indebita, cerca aiuto.",
+  "description": "La povertà degli anziani si estende alle famiglie: pensioni insufficienti, aiuti informali e 515 milioni di trattenute sindacali nel 2025.",
+  "datePublished": "2026-10-10",
+  "dateModified": "2026-10-10",
+  "dateLabel": "10 ottobre 2026",
+  "category": "Società",
+  "categoryPath": "archivio-societa.html",
+  "author": "UNO SGUARDO SULL’UOMO",
+  "schemaAuthor": "Redazione Uno Sguardo sull’Uomo",
+  "readingMinutes": 22,
+  "tags": [
+    "Povertà assoluta",
+    "Pensioni",
+    "Assegno sociale",
+    "Sindacati",
+    "INPS",
+    "Trattenute sindacali",
+    "Deleghe",
+    "Caritas",
+    "Banco Alimentare",
+    "Quattordicesima sociale"
+  ],
+  "cardEyebrow": "Società • Pensioni • Povertà",
+  "image": "assets/sindacato-vampiro-poverta-pensioni.webp",
+  "imageWidth": 1672,
+  "imageHeight": 941,
+  "imageAlt": "Anziana pensionata esamina bollette e spese domestiche davanti a un portafoglio quasi vuoto",
+  "imageCaption": "Immagine prodotta da Uno Sguardo sull'Uomo",
+  "secondaryImage": "assets/sindacato-vampiro-trattenuta-pensione.webp",
+  "secondaryImageWidth": 1672,
+  "secondaryImageHeight": 941,
+  "secondaryImageAlt": "Pensionato esamina un cedolino che evidenzia la trattenuta sindacale sulla pensione",
+  "socialImage": "assets/sindacato-vampiro-poverta-pensioni.webp",
+  "socialImageWidth": 1672,
+  "socialImageHeight": 941,
+  "seo": {
+    "primaryQuery": "povertà anziani famiglie",
+    "searchIntent": "informativo-approfondimento",
+    "supportingQueries": [
+      "povertà assoluta anziani Italia",
+      "pensioni basse aiuto delle famiglie",
+      "trattenute sindacali sulle pensioni"
+    ],
+    "serpCheckedAt": "2026-10-10"
+  }
+}
