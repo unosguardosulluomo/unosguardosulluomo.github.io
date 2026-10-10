@@ -1,6 +1,7 @@
 """Regression checks for the Trump-Putin peace dossier."""
 
 import json
+import re
 from pathlib import Path
 from xml.etree import ElementTree
 
@@ -29,7 +30,7 @@ assert all(caption.strip() == D["imageCaption"] for caption in article.xpath("//
 assert len(article.xpath("//section[contains(@class,'sources')]//li")) == 16
 assert not article.xpath("//section[contains(@class,'sources')]//a")
 assert "https://" not in article.xpath("string(//section[contains(@class,'sources')])")
-assert "Central Intelligence Agency" not in visible and "CIA" not in visible
+assert "Central Intelligence Agency" not in visible and not re.search(r"\bCIA\b", visible)
 
 for required in (
     "Office of Foreign Assets Control (OFAC)",

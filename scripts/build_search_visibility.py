@@ -138,12 +138,20 @@ def concise_description(value: str) -> str:
     return shortened + "…"
 
 
-def normalise_article_metadata(source: str) -> str:
+def editorial_seo_title(slug: str, fallback: str) -> str:
+    for metadata_path in (ROOT / "editorial").glob("*.json"):
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        if metadata.get("slug") == slug:
+            return clean(metadata.get("seoTitle", fallback))
+    return fallback
+
+
+def normalise_article_metadata(source: str, slug: str) -> str:
     soup = BeautifulSoup(source, "html.parser")
     h1 = soup.find("h1")
     if not h1:
         return source
-    title = clean(h1.get_text(" ", strip=True))
+    title = editorial_seo_title(slug, clean(h1.get_text(" ", strip=True)))
     source = re.sub(
         r"(<title>).*?(</title>)",
         lambda match: match.group(1) + html.escape(title) + match.group(2),
@@ -401,7 +409,7 @@ def update_html(path: Path, article_data: dict[str, dict]) -> None:
     source = re.sub(r"styles\.css\?v=[^\"']+", "styles.css?v=20261009-seo-1", source)
     source = normalise_local_image_dimensions(source)
     if path.name.startswith("article-"):
-        source = normalise_article_metadata(source)
+        source = normalise_article_metadata(source, path.name)
     if not path.name.startswith("article-"):
         def update_card(match: re.Match[str]) -> str:
             block = match.group(0)
