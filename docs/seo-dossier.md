@@ -30,7 +30,7 @@ Gli intenti ammessi sono `informativo-attualità`, `informativo-approfondimento`
 - L'apertura espone subito risposta, tesi o risultato della verifica.
 - Le domande secondarie diventano sezioni quando migliorano davvero la comprensione.
 - Numeri, fonti, limiti e contraddittorio hanno priorità sulla ripetizione della query.
-- Il generatore ricava la descrizione SEO dai contenuti visibili, aggiunge dimensioni reali alle immagini locali e crea tre collegamenti a dossier semanticamente correlati.
+- Il generatore ricava la descrizione SEO dai contenuti visibili, aggiunge dimensioni reali alle immagini locali, crea tre collegamenti a dossier semanticamente correlati e una navigazione cronologica verso i dossier adiacenti della stessa microcategoria.
 
 ## Prima della pull request
 

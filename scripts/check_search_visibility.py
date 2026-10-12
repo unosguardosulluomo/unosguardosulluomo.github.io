@@ -105,6 +105,16 @@ for path in pages + articles:
             fail(f"{label}: il blocco correlati contiene un collegamento a sé stesso")
         if any(len(re.sub(r"\s+", " ", link.get_text(" ", strip=True))) < 10 for link in related_links):
             fail(f"{label}: testo dei collegamenti correlati non descrittivo")
+        series = soup.select_one("nav.dossier-series")
+        series_archive = series.select_one('a.dossier-series-archive[href^="archivio-"]') if series else None
+        series_links = series.select('a.dossier-series-link[href^="article-"]') if series else []
+        series_targets = [link.get("href", "").split("#", 1)[0].split("?", 1)[0] for link in series_links]
+        if not series_archive:
+            fail(f"{label}: collegamento all’archivio di categoria mancante")
+        if not 1 <= len(series_targets) <= 2 or len(set(series_targets)) != len(series_targets):
+            fail(f"{label}: navigazione cronologica di categoria non valida")
+        if label in series_targets:
+            fail(f"{label}: navigazione cronologica contiene un collegamento a sé stesso")
         for image in soup.find_all("img", src=True):
             src = image.get("src", "").split("?", 1)[0]
             if src.startswith(("http://", "https://", "data:", "/")):
@@ -149,6 +159,12 @@ for path in pages + articles:
         breadcrumb_names = [item.get("name") for item in breadcrumb_schema.get("itemListElement", [])] if breadcrumb_schema else []
         if breadcrumb_names[:2] != ["Prima pagina", category_name]:
             fail(f"{label}: breadcrumb strutturato non coerente")
+        webpage = next((node for node in graph if node.get("@type") == "WebPage"), None)
+        primary_image = next((node for node in graph if node.get("@type") == "ImageObject"), None)
+        if not webpage or webpage.get("mainEntity", {}).get("@id") != news.get("@id"):
+            fail(f"{label}: WebPage non collegata al NewsArticle")
+        if not primary_image or webpage.get("primaryImageOfPage", {}).get("@id") != primary_image.get("@id"):
+            fail(f"{label}: immagine principale strutturata non collegata")
 
 local_files = {path.name for path in ROOT.glob("*.html")} | {path.name for path in ROOT.glob("*.xml")}
 

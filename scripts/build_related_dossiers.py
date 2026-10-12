@@ -17,12 +17,22 @@ SECTION_RE = re.compile(
     r"\s*<section\b[^>]*class=\"[^\"]*\brelated-dossiers\b[^\"]*\"[^>]*>.*?</section>",
     flags=re.I | re.S,
 )
+SERIES_RE = re.compile(
+    r"\s*<nav\b[^>]*class=\"[^\"]*\bdossier-series\b[^\"]*\"[^>]*>.*?</nav>",
+    flags=re.I | re.S,
+)
 WORD_RE = re.compile(r"[\wÀ-ÿ]{4,}", flags=re.UNICODE)
 STOPWORDS = {
     "alla", "alle", "anche", "come", "dalla", "delle", "della", "degli",
     "dello", "dietro", "italia", "italiana", "italiano", "nella", "nelle",
     "negli", "nello", "perché", "quale", "quello", "questa", "questo",
     "sono", "sulla", "sulle", "sugli", "sullo", "senza", "verso",
+}
+CATEGORY_ARCHIVES = {
+    "Politica italiana": "archivio-politica-italiana.html",
+    "Politica internazionale": "archivio-politica-internazionale.html",
+    "Economia": "archivio-economia.html",
+    "Società": "archivio-societa.html",
 }
 
 
@@ -85,6 +95,18 @@ def related_for(source: Dossier, dossiers: list[Dossier]) -> list[Dossier]:
     return candidates[:3]
 
 
+def series_for(source: Dossier, dossiers: list[Dossier]) -> tuple[Dossier | None, Dossier | None]:
+    category = sorted(
+        (item for item in dossiers if item.category == source.category),
+        key=lambda item: (item.published, item.path.name),
+        reverse=True,
+    )
+    position = category.index(source)
+    newer = category[position - 1] if position > 0 else None
+    older = category[position + 1] if position + 1 < len(category) else None
+    return newer, older
+
+
 def render(items: list[Dossier]) -> str:
     links = "".join(
         "<li>"
@@ -101,10 +123,38 @@ def render(items: list[Dossier]) -> str:
     )
 
 
-def update(source: Dossier, related: list[Dossier]) -> None:
+def render_series(source: Dossier, newer: Dossier | None, older: Dossier | None) -> str:
+    archive = CATEGORY_ARCHIVES.get(source.category)
+    if not archive:
+        raise RuntimeError(f"Archivio mancante per la categoria {source.category!r}")
+    links = []
+    if newer:
+        links.append(
+            '<a class="dossier-series-link dossier-series-newer" rel="prev" '
+            f'href="{html.escape(newer.path.name, quote=True)}">'
+            '<span>Dossier più recente</span>'
+            f'<strong>{html.escape(newer.title)}</strong></a>'
+        )
+    if older:
+        links.append(
+            '<a class="dossier-series-link dossier-series-older" rel="next" '
+            f'href="{html.escape(older.path.name, quote=True)}">'
+            '<span>Dossier precedente</span>'
+            f'<strong>{html.escape(older.title)}</strong></a>'
+        )
+    return (
+        '<nav class="dossier-series" aria-label="Continua nella categoria">'
+        f'<a class="dossier-series-archive" href="{html.escape(archive, quote=True)}">'
+        f'Tutti i dossier di {html.escape(source.category)}</a>'
+        f'<div>{"".join(links)}</div></nav>'
+    )
+
+
+def update(source: Dossier, related: list[Dossier], newer: Dossier | None, older: Dossier | None) -> None:
     text = source.path.read_text(encoding="utf-8")
     text = SECTION_RE.sub("", text)
-    section = render(related)
+    text = SERIES_RE.sub("", text)
+    section = render(related) + "\n" + render_series(source, newer, older)
     markers = [
         r'\s*(?=<section\b[^>]*class="[^"]*\bsources\b)',
         r'\s*(?=<section\b[^>]*class="[^"]*\bmethod-note\b)',
@@ -129,8 +179,12 @@ def main() -> None:
     if len(dossiers) < 4:
         raise RuntimeError("Servono almeno quattro dossier per generare i collegamenti correlati")
     for dossier in dossiers:
-        update(dossier, related_for(dossier, dossiers))
-    print(f"Dossier correlati generati: {len(dossiers)} pagine, tre collegamenti ciascuna.")
+        newer, older = series_for(dossier, dossiers)
+        update(dossier, related_for(dossier, dossiers), newer, older)
+    print(
+        f"Dossier correlati e navigazione di categoria generati: "
+        f"{len(dossiers)} pagine, tre collegamenti correlati ciascuna."
+    )
 
 
 if __name__ == "__main__":
