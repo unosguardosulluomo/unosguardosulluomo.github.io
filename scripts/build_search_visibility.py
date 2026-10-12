@@ -31,6 +31,7 @@ WEB_ID = SITE + "#website"
 LOGO = SITE + "assets/testata.webp"
 FEED = SITE + "feed.xml"
 MACRO_TOPIC = "Geopolitica"
+STYLES_VERSION = "20261012-indexing-1"
 
 CATEGORY_PATHS = {
     "Politica italiana": "archivio-politica-italiana.html",
@@ -307,20 +308,26 @@ def page_schema(path: Path, soup: BeautifulSoup, article_data: dict[str, dict]) 
         image = meta(soup, prop="og:image") or LOGO
         article = soup.find("article")
         if article:
-            for navigation in article.select("nav.topic-breadcrumb"):
+            for navigation in article.select(
+                "nav.topic-breadcrumb, section.related-dossiers, nav.dossier-series"
+            ):
                 navigation.decompose()
         word_count = len(re.findall(r"\b[\wÀ-ÿ’'-]+\b", article.get_text(" ", strip=True) if article else ""))
         subject_names = list(dict.fromkeys([MACRO_TOPIC, category, *topics]))
+        webpage_id = canonical + "#webpage"
+        image_id = canonical + "#primaryimage"
+        breadcrumb_id = canonical + "#breadcrumb"
         node = {
             "@type": "NewsArticle",
             "@id": canonical + "#article",
             "headline": title,
             "description": description,
             "url": canonical,
-            "mainEntityOfPage": {"@type": "WebPage", "@id": canonical},
+            "mainEntityOfPage": {"@id": webpage_id},
             "datePublished": published,
             "dateModified": modified,
-            "image": [absolute(image)],
+            "image": [{"@id": image_id}],
+            "thumbnailUrl": absolute(image),
             "inLanguage": "it-IT",
             "isAccessibleForFree": True,
             "articleSection": category,
@@ -332,13 +339,28 @@ def page_schema(path: Path, soup: BeautifulSoup, article_data: dict[str, dict]) 
             "publisher": {"@id": ORG_ID},
             "isPartOf": {"@id": WEB_ID},
         }
-        graph.extend([
-            node,
-            breadcrumbs([
+        breadcrumb = breadcrumbs([
                 ("Prima pagina", SITE),
                 (category, SITE + CATEGORY_PATHS[category]),
                 (title, canonical),
-            ]),
+            ])
+        breadcrumb["@id"] = breadcrumb_id
+        graph.extend([
+            {
+                "@type": "ImageObject", "@id": image_id,
+                "url": absolute(image), "contentUrl": absolute(image),
+                "caption": title, "inLanguage": "it-IT",
+            },
+            node,
+            {
+                "@type": "WebPage", "@id": webpage_id, "url": canonical,
+                "name": title, "description": description, "inLanguage": "it-IT",
+                "datePublished": published, "dateModified": modified,
+                "isPartOf": {"@id": WEB_ID}, "breadcrumb": {"@id": breadcrumb_id},
+                "primaryImageOfPage": {"@id": image_id},
+                "mainEntity": {"@id": canonical + "#article"},
+            },
+            breadcrumb,
         ])
         article_data[path.name] = {
             "title": title, "description": description, "category": category,
@@ -406,7 +428,7 @@ def page_schema(path: Path, soup: BeautifulSoup, article_data: dict[str, dict]) 
 def update_html(path: Path, article_data: dict[str, dict]) -> None:
     source = path.read_text(encoding="utf-8")
     source = remove_geopolitica_nav(source)
-    source = re.sub(r"styles\.css\?v=[^\"']+", "styles.css?v=20261009-seo-1", source)
+    source = re.sub(r"styles\.css\?v=[^\"']+", f"styles.css?v={STYLES_VERSION}", source)
     source = normalise_local_image_dimensions(source)
     if path.name.startswith("article-"):
         source = normalise_article_metadata(source, path.name)
