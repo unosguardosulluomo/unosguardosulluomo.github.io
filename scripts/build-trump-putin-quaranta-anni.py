@@ -60,7 +60,7 @@ def table_markup(table):
         cells = "".join(f"<td>{esc(cell.text.strip())}</td>" for cell in row.cells)
         rows.append(f"<tr>{cells}</tr>")
     return (
-        '<div class="table-scroll"><table class="data-table">'
+        '<div class="data-table-wrap" tabindex="0"><table class="data-table">'
         f"<caption>{esc(caption)}</caption><thead><tr>{head}</tr></thead>"
         f'<tbody>{"".join(rows)}</tbody></table></div>'
     )
