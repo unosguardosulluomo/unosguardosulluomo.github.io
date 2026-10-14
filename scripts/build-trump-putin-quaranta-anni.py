@@ -202,7 +202,7 @@ page = f'''<!doctype html>
   <link rel="canonical" href="{URL}">
   <link rel="alternate" type="application/rss+xml" title="Uno Sguardo sull’Uomo" href="{SITE}feed.xml">
   <title>{esc(D['seoTitle'])}</title>
-  <link rel="stylesheet" href="styles.css?v=20261012-indexing-1">
+  <link rel="stylesheet" href="styles.css?v=20261014-inline-image-1">
   <link rel="stylesheet" href="editorial-rules.css?v=20260812-1">
   <link rel="stylesheet" href="dossier-tables.css?v=20260925-1">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
