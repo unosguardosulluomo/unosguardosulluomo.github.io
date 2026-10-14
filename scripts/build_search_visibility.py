@@ -31,7 +31,7 @@ WEB_ID = SITE + "#website"
 LOGO = SITE + "assets/testata.webp"
 FEED = SITE + "feed.xml"
 MACRO_TOPIC = "Geopolitica"
-STYLES_VERSION = "20261012-indexing-1"
+STYLES_VERSION = "20261014-inline-image-1"
 
 CATEGORY_PATHS = {
     "Politica italiana": "archivio-politica-italiana.html",
