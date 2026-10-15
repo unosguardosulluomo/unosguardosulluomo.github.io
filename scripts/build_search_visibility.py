@@ -567,15 +567,16 @@ def write_sitemaps(article_data: dict[str, dict], pages: list[Path]) -> None:
         )
     news_xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">\n' + "\n".join(news_rows) + "\n</urlset>\n"
     (ROOT / "sitemap-news.xml").write_text(news_xml, encoding="utf-8", newline="\n")
-    index = f'''<?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <sitemap><loc>{SITE}sitemap-pages.xml</loc><lastmod>{max(row[1] for row in page_rows)}</lastmod></sitemap>
-  <sitemap><loc>{SITE}sitemap-articles.xml</loc><lastmod>{max(row[1] for row in article_rows)}</lastmod></sitemap>
-  <sitemap><loc>{SITE}sitemap-news.xml</loc><lastmod>{today.isoformat()}</lastmod></sitemap>
-</sitemapindex>
-'''
-    for name in ["sitemap-index.xml", "sitemap.xml", "sitemap-google.xml"]:
-        (ROOT / name).write_text(index, encoding="utf-8", newline="\n")
+    # Search Console only needs one canonical, plain sitemap for this small site.
+    # The historical filenames remain byte-identical aliases so old submissions
+    # keep returning a valid sitemap instead of becoming 404s.
+    canonical_rows = [
+        (url, lastmod, None)
+        for url, lastmod, _image in sorted(page_rows + article_rows, key=lambda row: row[0])
+    ]
+    canonical_sitemap = urlset(canonical_rows)
+    for name in ["sitemap.xml", "sitemap-index.xml", "sitemap-google.xml"]:
+        (ROOT / name).write_text(canonical_sitemap, encoding="utf-8", newline="\n")
 
 
 def write_feed(article_data: dict[str, dict]) -> None:

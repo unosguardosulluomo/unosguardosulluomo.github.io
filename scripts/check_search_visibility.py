@@ -207,19 +207,21 @@ for path in pages + articles:
 
 NS = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
 try:
-    index = ET.parse(ROOT / "sitemap-index.xml").getroot()
-    children = [node.text for node in index.findall("sm:sitemap/sm:loc", NS)]
-    expected_children = [SITE + "sitemap-pages.xml", SITE + "sitemap-articles.xml"]
-    expected_children.append(SITE + "sitemap-news.xml")
-    if children != expected_children:
-        fail("sitemap-index.xml: elenco sitemap inatteso")
-    urls: list[str] = []
+    expected_urls = {canonical_for(path) for path in pages + articles}
+    for name in ["sitemap.xml", "sitemap-index.xml", "sitemap-google.xml"]:
+        root = ET.parse(ROOT / name).getroot()
+        urls = [node.text or "" for node in root.findall("sm:url/sm:loc", NS)]
+        if set(urls) != expected_urls or len(urls) != len(expected_urls):
+            fail(f"{name}: URL mancanti, duplicate o estranee")
+        if root.tag != "{http://www.sitemaps.org/schemas/sitemap/0.9}urlset":
+            fail(f"{name}: attesa una sitemap URL semplice")
+
+    child_urls: list[str] = []
     for name in ["sitemap-pages.xml", "sitemap-articles.xml"]:
         tree = ET.parse(ROOT / name).getroot()
-        urls.extend(node.text or "" for node in tree.findall("sm:url/sm:loc", NS))
-    expected_urls = {canonical_for(path) for path in pages + articles}
-    if set(urls) != expected_urls or len(urls) != len(expected_urls):
-        fail("sitemap: URL mancanti, duplicate o estranee")
+        child_urls.extend(node.text or "" for node in tree.findall("sm:url/sm:loc", NS))
+    if set(child_urls) != expected_urls or len(child_urls) != len(expected_urls):
+        fail("sitemap specialistiche: URL mancanti, duplicate o estranee")
 except (ET.ParseError, FileNotFoundError) as exc:
     fail(f"sitemap XML non valida: {exc}")
 
@@ -239,8 +241,13 @@ except (ET.ParseError, FileNotFoundError) as exc:
     fail(f"feed.xml non valido: {exc}")
 
 robots = (ROOT / "robots.txt").read_text(encoding="utf-8")
-if SITE + "sitemap-index.xml" not in robots:
-    fail("robots.txt: sitemap index non dichiarata")
+declared_sitemaps = [
+    line.split(":", 1)[1].strip()
+    for line in robots.splitlines()
+    if line.lower().startswith("sitemap:")
+]
+if declared_sitemaps != [SITE + "sitemap.xml"]:
+    fail("robots.txt: deve essere dichiarata soltanto la sitemap canonica sitemap.xml")
 
 if ERRORS:
     print("CONTROLLO VISIBILITÀ: FALLITO", file=sys.stderr)
