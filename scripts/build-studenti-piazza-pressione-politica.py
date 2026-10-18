@@ -291,7 +291,7 @@ page = f'''<!doctype html>
   <meta name="robots" content="index, follow, max-image-preview:large">
   <meta name="description" content="{esc(D['description'])}">
   <meta property="og:site_name" content="UNO SGUARDO SULL'UOMO">
-  <meta property="og:title" content="{esc(D['title'])}">
+  <meta property="og:title" content="{esc(D['ogTitle'])}">
   <meta property="og:description" content="{esc(D['description'])}">
   <meta property="og:type" content="article">
   <meta property="og:url" content="{URL}">
@@ -300,7 +300,7 @@ page = f'''<!doctype html>
   <meta property="og:image:width" content="{D['socialImageWidth']}">
   <meta property="og:image:height" content="{D['socialImageHeight']}">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="{esc(D['title'])}">
+  <meta name="twitter:title" content="{esc(D['ogTitle'])}">
   <meta name="twitter:description" content="{esc(D['description'])}">
   <meta name="twitter:image" content="{SITE+D['socialImage']}">
   <meta property="article:published_time" content="{D['datePublished']}">
