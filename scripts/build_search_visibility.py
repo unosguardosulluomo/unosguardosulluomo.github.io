@@ -139,11 +139,11 @@ def concise_description(value: str) -> str:
     return shortened + "…"
 
 
-def editorial_seo_title(slug: str, fallback: str) -> str:
+def editorial_title(slug: str, field: str, fallback: str) -> str:
     for metadata_path in (ROOT / "editorial").glob("*.json"):
         metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
         if metadata.get("slug") == slug:
-            return clean(metadata.get("seoTitle", fallback))
+            return clean(metadata.get(field, fallback))
     return fallback
 
 
@@ -152,7 +152,8 @@ def normalise_article_metadata(source: str, slug: str) -> str:
     h1 = soup.find("h1")
     if not h1:
         return source
-    title = editorial_seo_title(slug, clean(h1.get_text(" ", strip=True)))
+    title = editorial_title(slug, "seoTitle", clean(h1.get_text(" ", strip=True)))
+    social_title = editorial_title(slug, "ogTitle", title)
     source = re.sub(
         r"(<title>).*?(</title>)",
         lambda match: match.group(1) + html.escape(title) + match.group(2),
@@ -160,8 +161,8 @@ def normalise_article_metadata(source: str, slug: str) -> str:
         count=1,
         flags=re.I | re.S,
     )
-    source = replace_meta_content(source, "og:title", title)
-    source = replace_meta_content(source, "twitter:title", title)
+    source = replace_meta_content(source, "og:title", social_title)
+    source = replace_meta_content(source, "twitter:title", social_title)
 
     current = meta(soup, name="description")
     if not 110 <= len(current) <= 165:
