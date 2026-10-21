@@ -248,7 +248,7 @@ def write_search_archive(article_data: dict[str, dict]) -> None:
       <label class="search-query"><span>Parole da cercare</span><input id="search-query" name="q" type="search" autocomplete="off" placeholder="Titolo, persona, luogo o argomento"></label>
       <label><span>Categoria</span><select id="search-category" name="categoria"><option value="">Tutte</option>{category_options}</select></label>
       <label><span>Anno</span><select id="search-year" name="anno"><option value="">Tutti</option>{year_options}</select></label>
-      <label><span>Argomento</span><input id="search-topic" name="argomento" type="search" list="search-topic-options" autocomplete="off" placeholder="Tutti gli argomenti"><datalist id="search-topic-options">{topic_options}</datalist></label>
+      <label class="search-topic"><span>Argomento</span><input id="search-topic" name="argomento" type="search" list="search-topic-options" autocomplete="off" placeholder="Tutti gli argomenti"><datalist id="search-topic-options">{topic_options}</datalist></label>
       <button id="search-reset" type="reset">Azzera filtri</button>
     </form>
     <div class="search-summary"><p id="search-count" aria-live="polite">{len(articles)} indagini</p><nav aria-label="Archivi per categoria">{''.join(f'<a href="{path}">{html.escape(category)}</a>' for category, path in CATEGORY_PATHS.items())}</nav></div>
