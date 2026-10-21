@@ -32,6 +32,8 @@ LOGO = SITE + "assets/testata.webp"
 FEED = SITE + "feed.xml"
 MACRO_TOPIC = "Geopolitica"
 STYLES_VERSION = "20261014-inline-image-1"
+SEARCH_PAGE = "ricerca-indagini.html"
+SEARCH_INDEX = "search-index.json"
 
 CATEGORY_PATHS = {
     "Politica italiana": "archivio-politica-italiana.html",
@@ -116,6 +118,156 @@ def absolute(value: str) -> str:
 
 def clean(value: str) -> str:
     return re.sub(r"\s+", " ", value).strip()
+
+
+def ensure_search_navigation(source: str, page_name: str) -> str:
+    """Keep the global search link static and consistent on every public page."""
+    source = re.sub(
+        r'<a href="ricerca-indagini\.html"(?: aria-current="page")?>Ricerca indagini</a>',
+        "",
+        source,
+        flags=re.I,
+    )
+    current = ' aria-current="page"' if page_name == SEARCH_PAGE else ""
+    search_link = f'<a href="{SEARCH_PAGE}"{current}>Ricerca indagini</a>'
+    return re.sub(
+        r'(<nav class="nav"[^>]*>.*?<a href="indagini\.html"(?: aria-current="page")?>Indagini</a>)',
+        lambda match: match.group(1) + search_link,
+        source,
+        count=1,
+        flags=re.I | re.S,
+    )
+
+
+def write_search_archive(article_data: dict[str, dict]) -> None:
+    """Generate the complete crawlable archive and its full-text search index."""
+    articles = sorted(
+        article_data.items(),
+        key=lambda item: (item[1]["published"], item[1]["title"].casefold()),
+        reverse=True,
+    )
+    years = sorted({data["published"][:4] for _, data in articles}, reverse=True)
+    topics = sorted({
+        topic
+        for _, data in articles
+        for topic in data["topics"]
+        if topic not in {MACRO_TOPIC, data["category"]}
+    }, key=str.casefold)
+
+    cards: list[str] = []
+    search_records: list[dict] = []
+    for slug, data in articles:
+        published = datetime.strptime(data["published"], "%Y-%m-%d")
+        date_label = f"{published.day} {MONTHS[published.month]} {published.year}"
+        specific_topics = [
+            topic for topic in data["topics"]
+            if topic not in {MACRO_TOPIC, data["category"]}
+        ]
+        topics_label = " • ".join(specific_topics)
+        topic_markup = (
+            f'<p class="search-result-topics">{html.escape(topics_label)}</p>'
+            if topics_label else ""
+        )
+        cards.append(
+            f'<article class="search-result" data-dossier="{html.escape(slug, quote=True)}" '
+            f'data-category="{html.escape(data["category"], quote=True)}" '
+            f'data-year="{published.year}">'
+            f'<div class="search-result-meta"><a href="{CATEGORY_PATHS[data["category"]]}">'
+            f'{html.escape(data["category"])}</a><time datetime="{data["published"]}">{date_label}</time></div>'
+            f'<h2><a href="{html.escape(slug, quote=True)}">{html.escape(data["title"])}</a></h2>'
+            f'<p class="search-result-description">{html.escape(data["description"])}</p>'
+            f'{topic_markup}<a class="read-more" href="{html.escape(slug, quote=True)}">Leggi il dossier →</a>'
+            '</article>'
+        )
+
+        article_soup = BeautifulSoup((ROOT / slug).read_text(encoding="utf-8"), "html.parser")
+        article_node = article_soup.select_one(".article-body") or article_soup.select_one("article.article-page") or article_soup.body
+        full_text = clean(article_node.get_text(" ", strip=True) if article_node else "")
+        search_records.append({
+            "slug": slug,
+            "title": data["title"],
+            "description": data["description"],
+            "category": data["category"],
+            "topics": specific_topics,
+            "published": data["published"],
+            "text": full_text,
+        })
+
+    category_options = "".join(
+        f'<option value="{html.escape(category, quote=True)}">{html.escape(category)}</option>'
+        for category in CATEGORY_PATHS
+    )
+    year_options = "".join(f'<option value="{year}">{year}</option>' for year in years)
+    topic_options = "".join(
+        f'<option value="{html.escape(topic, quote=True)}">{html.escape(topic)}</option>'
+        for topic in topics
+    )
+    latest_date = max(data["published"] for _, data in articles)
+    latest = datetime.strptime(latest_date, "%Y-%m-%d")
+    latest_label = f"{latest.day} {MONTHS[latest.month]} {latest.year}"
+    description = (
+        "Cerca nell’archivio completo delle indagini di Uno Sguardo sull’Uomo per parola, "
+        "argomento, categoria e anno di pubblicazione."
+    )
+    canonical = SITE + SEARCH_PAGE
+    markup = f'''<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="description" content="{html.escape(description, quote=True)}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="UNO SGUARDO SULL'UOMO">
+  <meta property="og:title" content="Ricerca indagini | Uno Sguardo sull’Uomo">
+  <meta property="og:description" content="{html.escape(description, quote=True)}">
+  <meta property="og:url" content="{canonical}">
+  <meta property="og:image" content="{LOGO}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Ricerca indagini | Uno Sguardo sull’Uomo">
+  <meta name="twitter:description" content="{html.escape(description, quote=True)}">
+  <meta name="twitter:image" content="{LOGO}">
+  <title>Ricerca indagini | Uno Sguardo sull’Uomo</title>
+  <link rel="canonical" href="{canonical}">
+  <link rel="stylesheet" href="styles.css?v={STYLES_VERSION}">
+  <link rel="stylesheet" href="navigation.css?v=20261021-search-1">
+  <link rel="stylesheet" href="ricerca-indagini.css?v=20261021-search-1">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+</head>
+<body>
+  <main class="newspaper">
+    <div class="utility-bar"><span>Quotidiano indipendente di approfondimento</span><span>Archivio completo delle indagini</span><time class="current-date" datetime="{latest_date}">{latest_label}</time></div>
+    <header class="masthead"><a href="/" aria-label="Prima pagina"><img src="assets/testata.webp" alt="Uno Sguardo sull'Uomo" width="1230" height="279"></a></header>
+    <nav class="nav" aria-label="Navigazione principale"><a href="/">Prima pagina</a><a href="indagini.html">Indagini</a><a href="{SEARCH_PAGE}" aria-current="page">Ricerca indagini</a><a href="metodo.html">Metodo</a><a href="chi-siamo.html">Chi siamo</a><a href="contatti.html">Contatti</a></nav>
+    <header class="search-page-header">
+      <p class="section-kicker">Archivio completo</p>
+      <h1>Ricerca indagini</h1>
+      <p>{html.escape(description)}</p>
+    </header>
+    <form class="search-controls" role="search" aria-label="Cerca nell’archivio" novalidate>
+      <label class="search-query"><span>Parole da cercare</span><input id="search-query" name="q" type="search" autocomplete="off" placeholder="Titolo, persona, luogo o argomento"></label>
+      <label><span>Categoria</span><select id="search-category" name="categoria"><option value="">Tutte</option>{category_options}</select></label>
+      <label><span>Anno</span><select id="search-year" name="anno"><option value="">Tutti</option>{year_options}</select></label>
+      <label class="search-topic"><span>Argomento</span><input id="search-topic" name="argomento" type="search" list="search-topic-options" autocomplete="off" placeholder="Tutti gli argomenti"><datalist id="search-topic-options">{topic_options}</datalist></label>
+      <button id="search-reset" type="reset">Azzera filtri</button>
+    </form>
+    <div class="search-summary"><p id="search-count" aria-live="polite">{len(articles)} indagini</p><nav aria-label="Archivi per categoria">{''.join(f'<a href="{path}">{html.escape(category)}</a>' for category, path in CATEGORY_PATHS.items())}</nav></div>
+    <section id="search-results" class="search-results" aria-label="Tutte le indagini">
+      {''.join(cards)}
+    </section>
+    <p id="search-empty" class="search-empty" hidden>Nessuna indagine corrisponde ai criteri selezionati.</p>
+    <footer class="footer"><span>Uno Sguardo sull’Uomo — Testata editoriale indipendente</span><span><a href="privacy-cookie.html">Privacy e Cookie Policy</a></span><span><a href="mailto:unosguardosulluomo@gmail.com">unosguardosulluomo@gmail.com</a></span></footer>
+  </main>
+  <script src="ricerca-indagini.js?v=20261021-search-1" defer></script>
+</body>
+</html>
+'''
+    (ROOT / SEARCH_PAGE).write_text(markup, encoding="utf-8", newline="\n")
+    (ROOT / SEARCH_INDEX).write_text(
+        json.dumps(search_records, ensure_ascii=False, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
 
 
 def replace_meta_content(source: str, key: str, value: str) -> str:
@@ -393,6 +545,7 @@ def page_schema(path: Path, soup: BeautifulSoup, article_data: dict[str, dict]) 
         page_types = {
             "chi-siamo.html": "AboutPage", "contatti.html": "ContactPage",
             "metodo.html": "WebPage", "indagini.html": "CollectionPage",
+            SEARCH_PAGE: "CollectionPage",
         }
         page_type = "CollectionPage" if path.name.startswith("archivio-") else page_types.get(path.name, "WebPage")
         page = {
@@ -429,6 +582,12 @@ def page_schema(path: Path, soup: BeautifulSoup, article_data: dict[str, dict]) 
 def update_html(path: Path, article_data: dict[str, dict]) -> None:
     source = path.read_text(encoding="utf-8")
     source = remove_geopolitica_nav(source)
+    source = ensure_search_navigation(source, path.name)
+    if path.name == "index.html":
+        source = source.replace(
+            'href="indagini.html">Vai a tutte le indagini →',
+            f'href="{SEARCH_PAGE}">Vai all’archivio completo →',
+        )
     source = re.sub(r"styles\.css\?v=[^\"']+", f"styles.css?v={STYLES_VERSION}", source)
     source = normalise_local_image_dimensions(source)
     if path.name.startswith("article-"):
@@ -611,7 +770,7 @@ def main() -> None:
     articles = sorted(path for path in ROOT.glob("article-*.html") if not is_legacy_redirect(path))
     public_pages = [
         ROOT / name for name in [
-            "index.html", "indagini.html", "archivio-politica-italiana.html",
+            "index.html", "indagini.html", SEARCH_PAGE, "archivio-politica-italiana.html",
             "archivio-politica-internazionale.html", "archivio-economia.html",
             "archivio-societa.html", "metodo.html", "chi-siamo.html", "contatti.html",
         ]
@@ -619,6 +778,7 @@ def main() -> None:
     article_data: dict[str, dict] = {}
     for path in articles:
         update_html(path, article_data)
+    write_search_archive(article_data)
     for path in public_pages:
         update_html(path, article_data)
     write_sitemaps(article_data, public_pages + articles)
