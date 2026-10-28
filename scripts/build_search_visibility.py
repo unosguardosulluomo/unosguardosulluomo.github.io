@@ -29,6 +29,7 @@ ALIASES = ["UNO SGUARDO SULL'UOMO", "unosguardosulluomo"]
 ORG_ID = SITE + "#organization"
 WEB_ID = SITE + "#website"
 LOGO = SITE + "assets/testata.webp"
+ORG_LOGO = SITE + "assets/logo-quadrato.png"
 FEED = SITE + "feed.xml"
 MACRO_TOPIC = "Geopolitica"
 STYLES_VERSION = "20261014-inline-image-1"
@@ -531,10 +532,17 @@ def page_schema(path: Path, soup: BeautifulSoup, article_data: dict[str, dict]) 
             f'<meta property="article:tag" content="{html.escape(topic, quote=True)}">' for topic in topics
         )
     elif path.name == "index.html":
+        graph[0]["logo"] = {
+            "@type": "ImageObject",
+            "url": ORG_LOGO,
+            "contentUrl": ORG_LOGO,
+            "width": 512,
+            "height": 512,
+        }
         graph.extend([
             {
                 "@type": "WebPage", "@id": SITE + "#webpage", "url": SITE,
-                "name": title, "description": description, "inLanguage": "it-IT",
+                "name": BRAND, "description": description, "inLanguage": "it-IT",
                 "isPartOf": {"@id": WEB_ID}, "about": [
                     {"@type": "Thing", "name": value} for value in
                     ["Politica italiana", "Geopolitica", "Politica internazionale", "Economia", "Società", "Guerre", "Esteri"]
