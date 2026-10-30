@@ -35,7 +35,7 @@ articles = sorted(path for path in ROOT.glob("article-*.html") if not is_legacy_
 redirects = sorted(path for path in ROOT.glob("article-*.html") if is_legacy_redirect(path))
 pages = [
     ROOT / name for name in [
-        "index.html", "indagini.html", "archivio-politica-italiana.html",
+        "index.html", "indagini.html", "ricerca-indagini.html", "archivio-politica-italiana.html",
         "archivio-politica-internazionale.html", "archivio-economia.html",
         "archivio-societa.html", "metodo.html", "chi-siamo.html", "contatti.html",
     ]
@@ -75,6 +75,8 @@ for path in pages + articles:
         fail(f"{label}: navigazione principale mancante")
     elif main_nav.find("a", href="geopolitica.html"):
         fail(f"{label}: collegamento ridondante alla pagina Geopolitica")
+    elif not main_nav.find("a", href="ricerca-indagini.html"):
+        fail(f"{label}: collegamento a Ricerca indagini mancante")
     schemas = soup.select("script[data-seo-schema]")
     if len(schemas) != 1:
         fail(f"{label}: atteso un solo schema statico, trovati {len(schemas)}")
@@ -204,6 +206,40 @@ for path in pages + articles:
         for section in soup.select("section.archive-section"):
             if len(section.select("article.archive-card")) != 3:
                 fail("indagini.html: ogni categoria deve mostrare esattamente tre pubblicazioni")
+
+search_path = ROOT / "ricerca-indagini.html"
+if search_path.is_file():
+    search_soup = BeautifulSoup(search_path.read_text(encoding="utf-8"), "html.parser")
+    search_cards = search_soup.select("article.search-result[data-dossier]")
+    search_slugs = [card.get("data-dossier", "") for card in search_cards]
+    expected_slugs = {path.name for path in articles}
+    if len(search_slugs) != len(expected_slugs) or set(search_slugs) != expected_slugs:
+        fail("ricerca-indagini.html: archivio incompleto o con dossier duplicati")
+    search_dates = [
+        card.find("time", attrs={"datetime": True}).get("datetime", "")
+        for card in search_cards
+        if card.find("time", attrs={"datetime": True})
+    ]
+    if search_dates != sorted(search_dates, reverse=True):
+        fail("ricerca-indagini.html: risultati non ordinati dalla pubblicazione più recente")
+    if len(search_soup.select("form.search-controls input#search-query[type=search]")) != 1:
+        fail("ricerca-indagini.html: campo di ricerca mancante")
+    try:
+        search_index = json.loads((ROOT / "search-index.json").read_text(encoding="utf-8"))
+        indexed_slugs = [item.get("slug", "") for item in search_index]
+        if len(indexed_slugs) != len(expected_slugs) or set(indexed_slugs) != expected_slugs:
+            fail("search-index.json: indice incompleto o con dossier duplicati")
+        if any(not item.get("text") for item in search_index):
+            fail("search-index.json: testo integrale mancante")
+    except (FileNotFoundError, json.JSONDecodeError) as exc:
+        fail(f"search-index.json non valido: {exc}")
+else:
+    fail("ricerca-indagini.html mancante")
+
+home_soup = BeautifulSoup((ROOT / "index.html").read_text(encoding="utf-8"), "html.parser")
+archive_cta = home_soup.find("a", href="ricerca-indagini.html", string=re.compile(r"archivio completo", re.I))
+if not archive_cta:
+    fail("index.html: collegamento principale all’archivio completo mancante")
 
 NS = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
 try:
