@@ -16,7 +16,12 @@ page = BeautifulSoup((ROOT / SLUG).read_text(encoding="utf-8"), "html.parser")
 text = page.get_text(" ", strip=True)
 
 assert page.h1.get_text(" ", strip=True) == "VERDI IN CANNA: IL PROGRAMMA AVS SULLA CANNABIS"
-assert "Il programma AVS sulla cannabis riassume il limite" in page.select_one(".article-lead").get_text(" ", strip=True)
+assert page.select_one(".article-deck") is None
+assert page.select_one(".article-lead") is None
+hero = page.select_one(".article-hero")
+body = page.select_one(".article-body")
+assert hero is not None and body is not None
+assert body.find("h2").get_text(" ", strip=True) == "Venghino, signori, venghino"
 assert "L'isola felice ha sempre una produzione" in text
 assert "Quattro piante: una cifra piccola soltanto sulla carta" in text
 assert "L'alternativa: monopolio pubblico e filiera controllata" in text
