@@ -55,6 +55,73 @@ SECONDARY_ALT = (
 CAPTION = "Immagine prodotta da Uno Sguardo sull'Uomo"
 
 
+def listing_card(css_class: str = "archive-card", heading: str = "h3") -> str:
+    image_loading = 'fetchpriority="high"' if css_class == "lead-story" else 'loading="lazy"'
+    return (
+        f'<article class="{css_class}" data-dossier="{SLUG}">'
+        f'<a class="story-image" href="{SLUG}" aria-label="Leggi il dossier {html.escape(TITLE, quote=True)}">'
+        f'<img src="{HERO_NAME}" width="1672" height="941" alt="{html.escape(HERO_ALT, quote=True)}" '
+        f'{image_loading}></a>'
+        '<p class="eyebrow">Politica italiana • Ebook scolastici • Forza Italia</p>'
+        f'<p class="archive-meta"><time datetime="{PUBLISHED}">{DATE_LABEL}</time></p>'
+        f'<{heading}><a class="headline-link" href="{SLUG}">{html.escape(TITLE)}</a></{heading}>'
+        f'<p>{html.escape(DESCRIPTION)}</p>'
+        f'<a class="read-more" href="{SLUG}">Leggi il dossier →</a></article>'
+    )
+
+
+def update_listing_pages() -> None:
+    archive_path = ROOT / "archivio-politica-italiana.html"
+    archive = archive_path.read_text(encoding="utf-8")
+    if SLUG not in archive:
+        archive = archive.replace('<div class="archive-grid">', '<div class="archive-grid">\n' + listing_card(), 1)
+    archive = re.sub(
+        r'<time class="current-date" datetime="[^"]+">[^<]+</time>',
+        f'<time class="current-date" datetime="{PUBLISHED}">{DATE_LABEL}</time>',
+        archive,
+        count=1,
+    )
+    archive_path.write_text(archive, encoding="utf-8", newline="\n")
+
+    investigations_path = ROOT / "indagini.html"
+    investigations = investigations_path.read_text(encoding="utf-8")
+    section_start = investigations.index('<section class="archive-section"><div class="archive-section-header"><h2><a class="headline-link" href="archivio-politica-italiana.html">')
+    grid_start = investigations.index('<div class="archive-grid">', section_start) + len('<div class="archive-grid">')
+    grid_end = investigations.index('</div><a class="category-archive-link"', grid_start)
+    existing_cards = re.findall(r'<article class="archive-card"[\s\S]*?</article>', investigations[grid_start:grid_end])
+    existing_cards = [card for card in existing_cards if f'data-dossier="{SLUG}"' not in card]
+    investigations = investigations[:grid_start] + listing_card() + "".join(existing_cards[:2]) + investigations[grid_end:]
+    investigations = re.sub(
+        r'<time class="current-date" datetime="[^"]+">[^<]+</time>',
+        f'<time class="current-date" datetime="{PUBLISHED}">{DATE_LABEL}</time>',
+        investigations,
+        count=1,
+    )
+    investigations_path.write_text(investigations, encoding="utf-8", newline="\n")
+
+    home_path = ROOT / "index.html"
+    home = home_path.read_text(encoding="utf-8")
+    front_start = home.index('<section class="lead-grid"')
+    lead_start = home.index('<article class="lead-story"', front_start)
+    lead_end = home.index('</article>', lead_start) + len('</article>')
+    old_lead = home[lead_start:lead_end]
+    old_lead = old_lead.replace('class="lead-story"', 'class="side-story"', 1)
+    old_lead = old_lead.replace('<h1>', '<h2>').replace('</h1>', '</h2>')
+    old_lead = old_lead.replace(' fetchpriority="high"', ' loading="lazy"')
+    aside_start = home.index('<aside>', lead_end) + len('<aside>')
+    aside_end = home.index('</aside>', aside_start)
+    existing_side = re.findall(r'<article class="side-story"[\s\S]*?</article>', home[aside_start:aside_end])
+    existing_side = [card for card in existing_side if f'data-dossier="{SLUG}"' not in card]
+    home = home[:lead_start] + listing_card("lead-story", "h1") + home[lead_end:aside_start] + old_lead + "".join(existing_side[:1]) + home[aside_end:]
+    home = re.sub(
+        r'<time class="current-date" datetime="[^"]+">[^<]+</time>',
+        f'<time class="current-date" datetime="{PUBLISHED}">{DATE_LABEL}</time>',
+        home,
+        count=1,
+    )
+    home_path.write_text(home, encoding="utf-8", newline="\n")
+
+
 def slugify(value: str) -> str:
     value = unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode("ascii")
     value = re.sub(r"[^a-zA-Z0-9]+", "-", value).strip("-").lower()
@@ -296,7 +363,8 @@ def main() -> None:
     (ROOT / "editorial" / "ebook-scolastici-forza-italia.json").write_text(
         json.dumps(metadata, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n"
     )
-    print(f"Creati {SLUG}, metadati, DOCX e due immagini WebP")
+    update_listing_pages()
+    print(f"Creati {SLUG}, metadati, DOCX, due immagini WebP e aggiornate le pagine elenco")
 
 
 if __name__ == "__main__":
