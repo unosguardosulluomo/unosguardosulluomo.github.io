@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""Compare Search Console indexing examples with the current static HTML.
+"""Compare the latest saved Search Console snapshot with the static HTML.
 
-The URL groups below reproduce the Search Console report last updated on
-2026-10-12 and inspected on 2026-10-15.  This is an evidence snapshot, not a
-live Search Console client.
+The source CSV files are exports saved under docs/search-console. This script
+does not query Search Console and must be updated to point to each new monthly
+snapshot.
 """
 
 from __future__ import annotations
 
+import csv
 import json
 import re
 from collections import Counter
@@ -18,37 +19,25 @@ from bs4 import BeautifulSoup
 
 ROOT = Path(__file__).resolve().parents[1]
 SITE = "https://unosguardosulluomo.github.io/"
+SNAPSHOT_DATE = "2026-11-22"
+INDEX_REPORT_DATE = "2026-11-16"
+PERFORMANCE_END_DATE = "2026-11-20"
+SNAPSHOT = ROOT / "docs" / "search-console" / SNAPSHOT_DATE
 
-EXCLUDED = [
-    "article-geopolitica-politica-internazionale-trump-putin-quaranta-anni-parallelo.html",
-    "article-crescere-con-uno-schermo-in-mano.html",
-    "article-re-carlo-propaganda-militare.html",
-    "article-geopolitica-politica-internazionale-spagna-return-hub-ceuta.html",
-    "article-pickpocket-venezia.html",
-    "article-politica-italiana-societa-immigrazione-cpr-medici-ravenna.html",
-    "article-due-pesi-due-misure.html",
-    "article-economia-fisco-societa-1973-iva-vita-italiani.html",
-    "article-geopolitica-politica-internazionale-trump-putin-prezzo-pace.html",
-    "article-geopolitica-societa-poverta-contagiosa.html",
-]
 
-INDEXED_ARTICLES = [
-    "article-aler-lombardia.html",
-    "article-sigfrido-ultima-battaglia.html",
-    "article-dublinati.html",
-]
+def csv_names(path: Path, column: str) -> list[str]:
+    with path.open(encoding="utf-8-sig", newline="") as handle:
+        return [
+            Path(urlparse(row[column]).path).name or "index.html"
+            for row in csv.DictReader(handle)
+            if row.get(column)
+        ]
 
-INDEXED_NON_ARTICLES = [
-    "index.html",
-    "contatti.html",
-    "archivio-politica-internazionale.html",
-    "indagini.html",
-    "archivio-politica-italiana.html",
-    "archivio-economia.html",
-    "archivio-societa.html",
-    "chi-siamo.html",
-    "metodo.html",
-]
+
+EXCLUDED = csv_names(SNAPSHOT / "indexing" / "Tabella.csv", "URL")
+PERFORMANCE_PAGES = csv_names(SNAPSHOT / "performance" / "Pagine.csv", "Pagine principali")
+INDEXED_ARTICLES = [name for name in PERFORMANCE_PAGES if name.startswith("article-")]
+INDEXED_NON_ARTICLES = [name for name in PERFORMANCE_PAGES if not name.startswith("article-")]
 
 
 def load(path: Path) -> BeautifulSoup:
@@ -127,11 +116,12 @@ def main() -> None:
     excluded = [metrics(name, incoming) for name in EXCLUDED]
     indexed = [metrics(name, incoming) for name in INDEXED_ARTICLES]
 
-    print("# Audit indicizzazione Search Console — 15 ottobre 2026")
-    print("\nSnapshot del report aggiornato al 12 ottobre 2026. Le 12 URL indicizzate "
+    print(f"# Audit indicizzazione Search Console — {SNAPSHOT_DATE}")
+    print(f"\nSnapshot del report di indicizzazione aggiornato al {INDEX_REPORT_DATE} e del "
+          f"rendimento aggiornato al {PERFORMANCE_END_DATE}. Le 12 URL indicizzate "
           "comprendono soltanto 3 dossier; le altre 9 sono home, archivi o pagine istituzionali.")
-    print_group("Dossier scansionati ma non indicizzati (10)", excluded)
-    print_group("Dossier indicizzati mostrati dal report (3)", indexed)
+    print_group(f"Dossier scansionati ma non indicizzati ({len(excluded)})", excluded)
+    print_group(f"Dossier indicizzati con impressioni ({len(indexed)})", indexed)
     print("\n## Confronto delle mediane\n")
     print("| gruppo | parole | fonti | link interni |")
     print("|---|---:|---:|---:|")
