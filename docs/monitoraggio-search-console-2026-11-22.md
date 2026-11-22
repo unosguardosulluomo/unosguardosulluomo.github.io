@@ -69,9 +69,11 @@ Il 22 novembre Search Console mostra cinque invii storici, tutti con stato `Impo
 
 Il file pubblico `sitemap.xml` risponde correttamente e contiene le URL canoniche. Il problema osservato riguarda quindi lo stato dell’invio in Search Console, non l’assenza del file nel sito.
 
+Il 22 novembre 2026 la sola sitemap canonica `sitemap.xml` è stata reinviata. Search Console ha confermato **“Sitemap inviata”** e ha indicato che Google la elaborerà periodicamente. L'accettazione dell'invio non equivale ancora a un esito positivo della lettura: occorre attendere l'aggiornamento di stato e del numero di pagine rilevate.
+
 ## Priorità operative
 
-1. Reinviare in Search Console soltanto `sitemap.xml` e verificare che passi a `Operazione riuscita` con pagine rilevate.
+1. Verificare dopo l'elaborazione che `sitemap.xml` passi a `Operazione riuscita` e mostri pagine rilevate.
 2. Non reinviare le sitemap storiche: `robots.txt` dichiara correttamente una sola sitemap canonica.
 3. Controllare nelle prossime settimane `article-dublinati.html` e `article-aler-lombardia.html`, entrambe in posizione media 5–20 con impressioni ma senza clic.
 4. Verificare la resa mobile delle pagine con impressioni prima di intervenire su titoli o contenuti.
