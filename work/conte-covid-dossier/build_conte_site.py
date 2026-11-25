@@ -192,7 +192,7 @@ def extract_body() -> tuple[str, list[tuple[str, str]], list[str], str]:
             attribution = lines[1] if len(lines) > 1 else ""
             cite = f"<cite>{html.escape(attribution)}</cite>" if attribution else ""
             body.append(f"<blockquote><p>{html.escape(quote)}</p>{cite}</blockquote>")
-        elif text != CAPTION:
+        elif not text.startswith("Immagine prodotta da Uno Sguardo sull"):
             body.append(f"<p>{html.escape(text)}</p>")
 
     if not lead or len(headings) < 10 or len(sources) < 20 or not secondary_inserted:
@@ -212,6 +212,7 @@ def convert_image(source: Path, destination: Path) -> tuple[int, int]:
 
 
 def main() -> None:
+    already_listed = SLUG in (ROOT / "index.html").read_text(encoding="utf-8")
     for path in (SOURCE_DOCX, SOURCE_HERO, SOURCE_SECONDARY):
         if not path.is_file():
             raise FileNotFoundError(path)
@@ -275,8 +276,9 @@ def main() -> None:
     (ROOT / "editorial" / "conte-commissione-covid.json").write_text(
         json.dumps(metadata, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n"
     )
-    template["update_listing_pages"].__globals__["listing_card"] = listing_card
-    template["update_listing_pages"]()
+    if not already_listed:
+        template["update_listing_pages"].__globals__["listing_card"] = listing_card
+        template["update_listing_pages"]()
     print(f"Creati {SLUG}, metadati, DOCX, due immagini WebP e aggiornate le pagine elenco")
 
 
